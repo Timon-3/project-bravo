@@ -1,0 +1,27 @@
+{% extends "home/layout.html" %}
+{% block title %}
+Home
+{% endblock %}
+{% block content %}
+<h2>List of Rooms</h2>
+{% if room_list %}
+<table class="room_list">
+<thead>
+<tr>
+…
+</tr>
+</thead>
+<tbody>
+{% for room in room_list %}
+<tr>
+    <td>{{ room.name }}</td>
+    <td>{{ room.capacity }}</td>
+    <td>{{ room.description }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}
+<p>No data found.</p>
+{% endif %}
+{% endblock %}
