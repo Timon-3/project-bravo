@@ -3,9 +3,6 @@ from home.models import Room
 from django.views.generic import ListView
 # Create your views here.
 
-def home(request):
-    return render(request, "home/home.html")
-
 # Create your views here.
 class HomeListView(ListView):
     """Renders the home page, with a list of all Rooms"""
@@ -14,3 +11,7 @@ class HomeListView(ListView):
         context = super(HomeListView, 
         self).get_context_data(**kwargs)
         return context
+
+def roomdetail(request, room_id):
+    room = Room.objects.get(id=room_id)
+    return render(request, "home/room.html", {"room": room})
