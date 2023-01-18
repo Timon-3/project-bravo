@@ -7,17 +7,27 @@ class Room(models.Model):
     name = models.CharField(max_length=200)
     capacity = models.IntegerField()
     description = models.CharField(max_length=2000)
+    def __str__(self) -> str:
+        return self.name
 
+class Event(models.Model):
+    room = models.ForeignKey('Room', on_delete=models.CASCADE)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    description = models.CharField(max_length=2000)
+    def __str__(self) -> str:
+        return self.description
 
+    def save(self, *args, **kwargs):
+        # check for items that have an overlapping start date
+        Event_overlapping_start = Event.objects.filter(start_time__gte=self.start_time, start_time__lte=self.end_time).exists()
+        # check for items that have an overlapping end date
+        Event_overlapping_end = Event.objects.filter(end_time__gte=self.start_time, end_time__lte=self.end_time).exists()
+        # check for items that envelope this item
+        Event_enveloping = Event.objects.filter(start_time__lte=self.start_time, end_time__gte=self.end_time).exists()
+        Event_items_present = Event_overlapping_start or Event_overlapping_end or Event_enveloping
 
-"""
-# can be deleted if we decide to use the Django's built-it authentication system
-    class Users(models.Model):
-    user_ID = models.CharField(verbose_name="User's ID", max_length=50, help_text="User's ID")
-    psw = models.CharField(verbose_name="Password", max_length=100, help_text="Password")
-    email = models.CharField(verbose_name="E-mail", max_length=100, help_text="E-mail")
-    first_name = models.CharField(verbose_name="Password", max_length=100, help_text="Password")
-    last_name = models.CharField(max_length=100)
-    phone_number = models.IntegerField(max_length=20, blank=True)
-    organization = models.CharField(max_length=50, blank=True)
-    created = models.DateTimeField(verbose_name="Creation date", default=timezone.now, help_text="The user was created at that time") """
+        if Event_items_present:
+            return 
+        else:
+            super(Event, self).save(*args, **kwargs) # Call the "real" save() method.

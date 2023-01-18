@@ -5,18 +5,7 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
-
-
-# Create your views here.
-
-def home(request):
-    return render(request, "home/home.html")
-
-
-def secured(request):
-    if request.user.is_authenticated:
-            return render(request, 'home/secured.html', {})
-    return redirect('/login')
+from home.forms import EventForm
 
 
 # Create your views here.
@@ -45,3 +34,18 @@ class SignupView(CreateView):
         if self.request.user.is_authenticated:
             return redirect("/secured")
         return super().get(request, *args, **kwargs)
+
+
+def roomdetail(request, room_id):
+    form = EventForm(request.POST or None)
+    if request.method == "POST":
+        if form.is_valid():
+            Event = form.save(commit=False)
+            Event.save()
+    room = Room.objects.get(id=room_id)
+    return render(request, "home/room.html", {"room": room, "form": form})
+
+def secured(request):
+    if request.user.is_authenticated:
+            return render(request, 'home/secured.html', {})
+    return redirect('/login')

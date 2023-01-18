@@ -14,7 +14,7 @@ Home
 <tbody>
 {% for room in room_list %}
 <tr>
-    <td>{{ room.name }}</td>
+    <td><a href="{% url 'room' room.id %}">{{ room.name }}</a></td>
     <td>{{ room.capacity }}</td>
     <td>{{ room.description }}</td>
 </tr>

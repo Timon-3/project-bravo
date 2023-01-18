@@ -9,6 +9,7 @@ template_name="home/home.html",
 
 urlpatterns = [
     path("", home_list_view, name="home"),
+    path("room/<room_id>/", views.roomdetail, name="room"),
     path("secured", views.secured, name="secured"),
     path("login", views.LoginInterfaceView.as_view(), name="login"),
     path("logout", views.LogoutInterfaceView.as_view(), name="logout"),
