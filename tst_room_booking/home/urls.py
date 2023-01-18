@@ -9,4 +9,5 @@ template_name="home/home.html",
 
 urlpatterns = [
     path("", home_list_view, name="home"),
+    path("secured", views.secured)
 ]

@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from home.models import Room
 from django.views.generic import ListView
+from django.contrib.auth.decorators import login_required
+
 
 # Create your views here.
 
@@ -15,3 +17,7 @@ class HomeListView(ListView):
         context = super(HomeListView, 
         self).get_context_data(**kwargs)
         return context
+
+@login_required
+def secured(request):
+    return render(request, 'home/secured.html', {})
