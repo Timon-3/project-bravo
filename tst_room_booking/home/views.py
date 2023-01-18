@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from home.models import Room
 from django.views.generic import ListView
+
 # Create your views here.
 
 def home(request):
