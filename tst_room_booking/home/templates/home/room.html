@@ -1,0 +1,11 @@
+{% extends "home/layout.html" %}
+{% block title %}
+Home
+{% endblock %}
+{% block content %}
+<h2>{{ room.name }}</h2>
+<form method="POST" class="post-form">{% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="save btn btn-default">Save</button>
+</form>
+{% endblock %}
