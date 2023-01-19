@@ -34,13 +34,13 @@ timebox_length=timebox_end-timebox_start+1
 
 
 #Next Meeting variables
-next_meet_size=[250,160]
-next_meet_pos=[50,90]
+next_meet_size=[300,200]
+next_meet_pos=[20,60]
 next_meet_length=2
 
 # Testdata (pls change)
-next_meet_arr=[{"name": "Stefano Berta","date":"18.01.2023","starttime":"09:30","endtime":"10:15","descr":"Keine Beschreibung"},{"name":"Timon Frey","date":"18.01.2023","starttime":"11:15","endtime":"12:00","descr":"After Action Review"}]
-qr_code_text="It's a me, Thomas!"
+next_meet_arr=[{"name": "Stefano Berta","date":"19.01.2023","starttime":"09:30","endtime":"11:15","descr":"Keine Beschreibung"},{"name":"Timon Frey","date":"19.01.2023","starttime":"11:45","endtime":"14:45","descr":"After Action Review"},{"name":"Thomas Marti","date":"19.01.2023","starttime":"15:00","endtime":"17:00","descr":"Tom Tom"}]
+qr_code_text="Admin Passwort: 12346"
 room_inventory={"chair": 10,"table": 20,"beamer": 1,"video": True,"wifi": True,"ethernet": True}
 
 
@@ -80,52 +80,55 @@ try:
     
     # Add Date
     draw.text((10, 0), weekdays[weekday_today-1] +", "+ str(dt.strftime('%d.%m.%Y')), font = date_font, fill = 0)
-
+    #Himage.paste(centre_text((200,100),weekdays[weekday_today-1] +", "+ str(dt.strftime('%d.%m.%Y')),date_font))
+    #centre_image()
     # Add Room-State
-    draw.text((180, 0), ROOM_STATE[0], font = font34, fill = 0)
+    draw.text((180, 0), room_state(next_meet_arr), font = font34, fill = 0)
 
     # Add QR-Code
-    Himage.paste(add_qrcode(qr_code_text), (320,-5))
+    Himage.paste(add_qrcode(qr_code_text), (315,0))
 
     # Roominfo
     counter=0
     for item in room_inventory:
         if room_inventory[item]:
-            Himage.paste(add_icon(os.path.join(picdir,item+".png")), (counter*35+10,273))
+            Himage.paste(add_icon(os.path.join(picdir,item+".png")), (counter*35,273))
             if type(room_inventory[item])!=bool:
-                draw.text((counter*35+25,273), str(room_inventory[item]))
+                draw.text((counter*35+15,273), str(room_inventory[item]))
             counter+=1
 
-    # Next meeting
-    meeting_icon_size=25
-    for i in range (next_meet_length):
-        Himage.paste(add_icon(os.path.join(picdir,"person.png"),meeting_icon_size), (next_meet_pos[0],next_meet_pos[1]+int(next_meet_size[1]/next_meet_length)*i))
-        Himage.paste(add_icon(os.path.join(picdir,"duration.png"),meeting_icon_size), (next_meet_pos[0],next_meet_pos[1]+int(next_meet_size[1]/next_meet_length)*i+meeting_icon_size))
-        draw.text((next_meet_pos[0]+meeting_icon_size, next_meet_pos[1]+(next_meet_size[1]/next_meet_length)*i+meeting_icon_size/6), next_meet_arr[i]["name"], font = meeting_font)
-        draw.text((next_meet_pos[0]+meeting_icon_size, next_meet_pos[1]+(next_meet_size[1]/next_meet_length)*i+meeting_icon_size+meeting_icon_size/6), next_meet_arr[i]["starttime"]+"-"+next_meet_arr[i]["endtime"], font = meeting_font)
-        draw.text((next_meet_pos[0], next_meet_pos[1]+(next_meet_size[1]/next_meet_length)*i+2*meeting_icon_size), next_meet_arr[i]["descr"], font = meeting_desc_font)
+    # Next meetings
+
+    Himage.paste(show_next_meetings(find_next_meetings(next_meet_arr),next_meet_size,next_meet_length),next_meet_pos)
     
     # Timemodule
-    timedot_pos=float(dt.strftime('%H'))+1/60*float(dt.strftime('%M'))-timebox_start
+    Himage.paste(show_time_module(timebox_size,next_meet_arr,timebox_length,timebox_start),timebox_pos)
+
+    """ timedot_pos=float(dt.strftime('%H'))+1/60*float(dt.strftime('%M'))-timebox_start
     # Time with  horizontal lines
     for i in range (timebox_length):
         draw.text((timebox_pos[0], timebox_pos[1]+timebox_size[1]/timebox_length*i-(timebox_length/2)), str(i+timebox_start).zfill(2)+":00", font = cal_font)
         
         draw.line((timebox_pos[0]+timebox_size[0]/timebox_length*3.5, timebox_pos[1]+timebox_size[1]/timebox_length*i, timebox_size[0]+timebox_pos[0], timebox_pos[1]+timebox_size[1]/timebox_length*i))
-
-    draw.ellipse(((timebox_pos[0]+timebox_size[0]/timebox_length*3.5)-3, (timebox_pos[1]+timebox_size[1]/timebox_length*timedot_pos)-3,(timebox_pos[0]+timebox_size[0]/timebox_length*3.5)+3, (timebox_pos[1]+timebox_size[1]/timebox_length*timedot_pos)+3),outline = 1, fill = 0)
     
     # Add Events to Timemodule
     for meeting in next_meet_arr:
         starttime_float=float(meeting["starttime"][:2])+1/60*float(meeting["starttime"][-2:])
         endtime_float=float(meeting["endtime"][:2])+1/60*float(meeting["endtime"][-2:])
-        draw.rectangle((timebox_pos[0]+timebox_size[0]/3,timebox_pos[1]+timebox_size[1]/timebox_length*(starttime_float-timebox_start),timebox_pos[0]+timebox_size[0]/10*9,timebox_pos[1]+timebox_size[1]/timebox_length*(endtime_float-timebox_start)), fill = 0) 
+        draw.rounded_rectangle((timebox_pos[0]+timebox_size[0]/3.5,timebox_pos[1]+timebox_size[1]/timebox_length*(starttime_float-timebox_start),timebox_pos[0]+timebox_size[0]/10*9,timebox_pos[1]+timebox_size[1]/timebox_length*(endtime_float-timebox_start)),outline = 1, fill = 0,radius=5) 
         #for meeting_details in meeting:
 
+    # The NOW-Point
+    draw.line(((timebox_pos[0]+timebox_size[0]/timebox_length*3.5), (timebox_pos[1]+timebox_size[1]/timebox_length*timedot_pos),(timebox_pos[0]+timebox_size[0]*0.75+1), (timebox_pos[1]+timebox_size[1]/timebox_length*timedot_pos)),width = 3,fill=1)
+    draw.line(((timebox_pos[0]+timebox_size[0]/timebox_length*3.5), (timebox_pos[1]+timebox_size[1]/timebox_length*timedot_pos),(timebox_pos[0]+timebox_size[0]*0.75), (timebox_pos[1]+timebox_size[1]/timebox_length*timedot_pos)),width = 1)
+    draw.ellipse(((timebox_pos[0]+timebox_size[0]/timebox_length*3.5)-3, (timebox_pos[1]+timebox_size[1]/timebox_length*timedot_pos)-3,(timebox_pos[0]+timebox_size[0]/timebox_length*3.5)+3, (timebox_pos[1]+timebox_size[1]/timebox_length*timedot_pos)+3),outline = 1, fill = 0)
+     """
 
+    #Himage.paste(add_icon(os.path.join(picdir,"rd.png"),400), (0,0))
     logging.info("Fill eInk Screen")
     draw.text((225, 290), "Zuletzt Aktualisiert:"+ str(dt.strftime('%d.%m.%Y-%H:%M')), font = font10)
     # Send all the stuff to the eInk Screen
+    #Himage.show()
     epd.display(epd.getbuffer(Himage))
     #epd.display_4Gray(epd.getbuffer_4Gray(Himage)) # for Grayscales
     
