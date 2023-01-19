@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from home.forms import EventForm
-from datetime import date
+from datetime import date, datetime
 
 
 # Create your views here.
@@ -45,13 +45,12 @@ def roomdetail(request, room_id):
             starttime = request.POST.get("start_time")
             endtime = request.POST.get("end_time")
             Event_overlapping_start = Event.objects.filter(room=Room_id, start_time__gt=starttime, start_time__lt=endtime).exists()
-            Event_overlapping_end = Event.objects.filter(end_time__gt=starttime, end_time__lt=endtime).exists()
+            Event_overlapping_end = Event.objects.filter(room=Room_id, end_time__gt=starttime, end_time__lt=endtime).exists()
             # check for items that envelope this item
-            Event_enveloping = Event.objects.filter(start_time__lt=starttime, end_time__gt=endtime).exists()
+            Event_enveloping = Event.objects.filter(room=Room_id, start_time__lt=starttime, end_time__gt=endtime).exists()
             Event_items_present = Event_overlapping_start or Event_overlapping_end or Event_enveloping
 
             if Event_items_present:
-                print("conflict")
                 conflict = ("Your Room is already Booked")
                 room = Room.objects.get(id=room_id)
                 return render(request, "home/room.html", {"room": room, "form": form, "conflict": conflict})
@@ -59,7 +58,7 @@ def roomdetail(request, room_id):
                 Eventf = form.save(commit=False)
                 Eventf.save()
                 form = EventForm()
-            
+
     room = Room.objects.get(id=room_id)
     return render(request, "home/room.html", {"room": room, "form": form})
 
