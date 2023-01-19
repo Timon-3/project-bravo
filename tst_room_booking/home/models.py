@@ -15,6 +15,7 @@ class Event(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     description = models.CharField(max_length=2000)
+    # user_id = models.CharField(max_length=200)
     def __str__(self) -> str:
         return self.description
 
