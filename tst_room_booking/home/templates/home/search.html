@@ -3,22 +3,27 @@
 search
 {% endblock %}
 {% block content %}
-<form method="get">
-    {{xfilter.form}}
-     <button  type="submit">Get Events</button>
+<form method="POST" class="get-form">{% csrf_token %}
+    {{ form }}
+    <button type="submit" class="save btn btn-default">Save</button>
 </form>
-<table>
-    <tr>
-        <td>Rooms</td>
-        <td>Event Description</td>
-    </tr>
-    {% for item in Events %}
-        <tr>
-
-            <td>{{ item.room }}</td>
-            <td>{{ item.description }}</td>
-        </tr>
-
-    {% endfor %}
+<h2>List of Available Rooms</h2>
+{% if room_list %}
+<table class="room_list">
+<thead>
+<tr>
+…
+</tr>
+</thead>
+<tbody>
+{% for room in room_list %}
+<tr>
+    <td><a href="{% url 'room' room.id %}">{{ room.name }}</a></td>
+</tr>
+{% endfor %}
+</tbody>
 </table>
+{% else %}
+<p></p>
+{% endif %}
 {% endblock %}

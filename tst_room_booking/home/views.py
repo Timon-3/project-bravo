@@ -5,10 +5,8 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
-from home.forms import EventForm
+from home.forms import EventForm, FilterForm
 from datetime import date, datetime
-from home.filter import Event_Filter
-
 
 # Create your views here.
 class HomeListView(ListView):
@@ -20,14 +18,31 @@ class HomeListView(ListView):
         return context
 
 def search(request):
+    form = FilterForm(request.POST or None)
+    #room_list = []
+    room_list = Event.objects.none()
+    free_room = []
+    if request.method == "POST":
+        starttime = request.POST.get("start_time")
+        endtime = request.POST.get("end_time")
+        rooms_list = Room.objects.all()
+        for room in rooms_list:
+            Event_overlapping_start = Event.objects.filter(room=room.pk, start_time__gte=starttime, start_time__lt=endtime).exists()
+            Event_overlapping_end = Event.objects.filter(room=room.pk, end_time__gt=starttime, end_time__lte=endtime).exists()
+            # check for items that envelope this item
+            Event_enveloping = Event.objects.filter(room=room.pk, start_time__lte=starttime, end_time__gte=endtime).exists()
+            Event_items_present = Event_overlapping_start or Event_overlapping_end or Event_enveloping
 
-   Event_all = Event.objects.all()
-   xfilter = Event_Filter(request.GET, queryset=Event_all)
-   Events = xfilter.qs
-   context = {'xfilter': xfilter, 'Events': Events}
-
-   return render(request, 'home/search.html', context)
-
+            if Event_items_present:
+                continue
+            else:
+                free_room.append(room.pk)
+        print(free_room,"1")
+        for id in free_room:
+            room = Room.objects.filter(id=id)
+            room_list = room_list | room
+        form = FilterForm()
+    return render(request, "home/search.html", {"form": form, "room_list": room_list})
 
 class LoginInterfaceView(LoginView):
     template_name = "home/login.html"
