@@ -1,0 +1,24 @@
+{% extends "home/layout.html" %}
+{% block title %}
+search
+{% endblock %}
+{% block content %}
+<form method="get">
+    {{xfilter.form}}
+     <button  type="submit">Get Events</button>
+</form>
+<table>
+    <tr>
+        <td>Rooms</td>
+        <td>Event Description</td>
+    </tr>
+    {% for item in Events %}
+        <tr>
+
+            <td>{{ item.room }}</td>
+            <td>{{ item.description }}</td>
+        </tr>
+
+    {% endfor %}
+</table>
+{% endblock %}

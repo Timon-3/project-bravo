@@ -7,6 +7,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from home.forms import EventForm
 from datetime import date, datetime
+from home.filter import Event_Filter
 
 
 # Create your views here.
@@ -17,6 +18,15 @@ class HomeListView(ListView):
         context = super(HomeListView, 
         self).get_context_data(**kwargs)
         return context
+
+def search(request):
+
+   Event_all = Event.objects.all()
+   xfilter = Event_Filter(request.GET, queryset=Event_all)
+   Events = xfilter.qs
+   context = {'xfilter': xfilter, 'Events': Events}
+
+   return render(request, 'home/search.html', context)
 
 
 class LoginInterfaceView(LoginView):
