@@ -51,16 +51,16 @@ def roomdetail(request, room_id):
             Event_items_present = Event_overlapping_start or Event_overlapping_end or Event_enveloping
 
             if Event_items_present:
-                conflict = ("Your Room is already Booked")
                 room = Room.objects.get(id=room_id)
+                conflict = (f"{room} is already booked at this time")
                 return render(request, "home/room.html", {"room": room, "form": form, "conflict": conflict})
             else:
                 Eventf = form.save(commit=False)
                 Eventf.save()
                 form = EventForm()
-
+    room_list = Event.objects.filter(room=room_id)
     room = Room.objects.get(id=room_id)
-    return render(request, "home/room.html", {"room": room, "form": form})
+    return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list})
 
 def secured(request):
     if request.user.is_authenticated:
