@@ -5,7 +5,7 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from home.forms import EventForm, RegisterUserForm
-
+from django.contrib.messages.views import SuccessMessageMixin
 
 # Create your views here.
 class HomeListView(ListView):
@@ -24,10 +24,12 @@ class LogoutInterfaceView(LogoutView):
     template_name = "home/logout.html"
 
 
-class SignupView(CreateView):
+class SignupView(SuccessMessageMixin, CreateView):
     form_class = RegisterUserForm
     template_name = "home/register.html"
     success_url = "/secured"
+    success_message = "Welcome! You successfully signup."
+
 
     # make sure only users who are not already logged in can access the signup page
     def get(self, request, *args, **kwargs):

@@ -8,6 +8,13 @@
     </head>
     
     <body>
+        <div class="alert alert-primary" role="alert">
+            {% if messages %}
+                {% for message in messages %}
+                {{ message }}
+                {% endfor %}
+            {% endif %}
+        </div>
         <div class="navbar">
             <ul class="nav navbar-nav">
                 <a href="{% url 'home' %}" class="navbar-brand">Home</a>
