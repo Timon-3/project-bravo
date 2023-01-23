@@ -5,6 +5,7 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.messages.views import SuccessMessageMixin # TODO: SuccessMessageMixin not working right now
 from home.forms import EventForm
 
 
@@ -18,11 +19,14 @@ class HomeListView(ListView):
         return context
 
 
-class LoginInterfaceView(LoginView):
+class LoginInterfaceView(LoginView, SuccessMessageMixin):
     template_name = "home/login.html"
+    success_message = "You were successfully logged in" # TODO: SuccessMessageMixin not working right now
 
-class LogoutInterfaceView(LogoutView):
+
+class LogoutInterfaceView(SuccessMessageMixin, LogoutView):
     template_name = "home/logout.html"
+    success_message = "You were successfully logged out" # TODO: SuccessMessageMixin not working right now
 
 class SignupView(CreateView):
     form_class = UserCreationForm
@@ -37,13 +41,15 @@ class SignupView(CreateView):
 
 
 def roomdetail(request, room_id):
-    form = EventForm(request.POST or None)
-    if request.method == "POST":
-        if form.is_valid():
-            Event = form.save(commit=False)
-            Event.save()
-    room = Room.objects.get(id=room_id)
-    return render(request, "home/room.html", {"room": room, "form": form})
+    if request.user.is_authenticated:
+        form = EventForm(request.POST or None)
+        if request.method == "POST":
+            if form.is_valid():
+                Event = form.save(commit=False)
+                Event.save()
+        room = Room.objects.get(id=room_id)
+        return render(request, "home/room.html", {"room": room, "form": form})
+    return redirect('/login')
 
 def secured(request):
     if request.user.is_authenticated:

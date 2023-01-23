@@ -1,6 +1,8 @@
 from django import forms
 from django.forms import ModelForm, DateInput
 from home.models import Event
+
+
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
