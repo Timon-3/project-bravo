@@ -1,6 +1,19 @@
 from django import forms
 from django.forms import ModelForm, DateInput
 from home.models import Event
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
+
+# add extra fields to django's user form
+class RegisterUserForm(UserCreationForm):
+    email = forms.EmailField()
+    first_name = forms.CharField(max_length=200)
+    last_name = forms.CharField(max_length=200)
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
 
 
 class EventForm(forms.ModelForm):
@@ -10,7 +23,7 @@ class EventForm(forms.ModelForm):
         'start_time': DateInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
         'end_time': DateInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
         }
-        fields = '__all__'
+        fields = ('room', 'start_time', 'end_time', 'description')
 
     def __init__(self, *args, **kwargs):
         super(EventForm, self).__init__(*args, **kwargs)
