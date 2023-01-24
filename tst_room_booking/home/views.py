@@ -16,12 +16,15 @@ class HomeListView(ListView):
         return context
 
 
-class LoginInterfaceView(LoginView):
+class LoginInterfaceView(SuccessMessageMixin, LoginView):
     template_name = "home/login.html"
+    success_message = "You successfully logged in"
 
 
-class LogoutInterfaceView(LogoutView):
+class LogoutInterfaceView(SuccessMessageMixin, LogoutView):
     template_name = "home/logout.html"
+    success_message = "Your logout was successful. Have a great day =)"
+
 
 
 class SignupView(SuccessMessageMixin, CreateView):
