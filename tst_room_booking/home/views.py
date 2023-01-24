@@ -45,6 +45,7 @@ def search(request):
         form = FilterForm()
     return render(request, "home/search.html", {"form": form, "room_list": room_list})
 
+
 class LoginInterfaceView(SuccessMessageMixin, LoginView):
     template_name = "home/login.html"
     success_message = "You successfully logged in"
@@ -55,13 +56,11 @@ class LogoutInterfaceView(SuccessMessageMixin, LogoutView):
     success_message = "Your logout was successful. Have a great day =)"
 
 
-
 class SignupView(SuccessMessageMixin, CreateView):
     form_class = RegisterUserForm
     template_name = "home/register.html"
     success_url = "/secured"
     success_message = "Welcome! You successfully signup."
-
 
     # make sure only users who are not already logged in can access the signup page
     def get(self, request, *args, **kwargs):
@@ -107,5 +106,19 @@ def roomdetail(request, room_id):
 
 def secured(request):
     if request.user.is_authenticated:
-            return render(request, 'home/secured.html', {})
+
+        event_list = Event.objects.none()
+        events_list = Event.objects.all()
+        user_events = []  # -> free_room
+        for event in events_list:
+            if event.user == request.user:
+                user_events.append(event.pk)
+        print(user_events,"1")
+        for id in user_events:
+            event = Event.objects.filter(id=id)
+            print("event: ",event)
+            event_list = event_list | event
+        return render(request, "home/secured.html", {"event_list": event_list})
+
+        # return render(request, 'home/secured.html', {})
     return redirect('/login')
