@@ -66,7 +66,7 @@ class SignupView(CreateView):
 
 def roomdetail(request, room_id):
     form = EventForm(request.POST or None)
-    html_cal = formatcal()
+    html_cal = formatcal(room_id)
     cal = mark_safe(html_cal)
     if request.method == "POST":
         if form.is_valid():
@@ -87,6 +87,8 @@ def roomdetail(request, room_id):
                 Eventf = form.save(commit=False)
                 Eventf.save()
                 form = EventForm()
+    html_cal = formatcal(room_id)
+    cal = mark_safe(html_cal)
     room_list = Event.objects.filter(room=room_id)
     room = Room.objects.get(id=room_id)
     return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list, "cal": cal})
