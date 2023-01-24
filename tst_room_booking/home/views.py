@@ -71,35 +71,6 @@ class SignupView(SuccessMessageMixin, CreateView):
 
 
 def roomdetail(request, room_id):
-"""<<<<<<< add_calendar_view
-    form = EventForm(request.POST or None)
-    html_cal = formatcal(room_id)
-    cal = mark_safe(html_cal)
-    if request.method == "POST":
-        if form.is_valid():
-            Room_id = request.POST.get("room")
-            starttime = request.POST.get("start_time")
-            endtime = request.POST.get("end_time")
-            Event_overlapping_start = Event.objects.filter(room=Room_id, start_time__gt=starttime, start_time__lt=endtime).exists()
-            Event_overlapping_end = Event.objects.filter(room=Room_id, end_time__gt=starttime, end_time__lt=endtime).exists()
-            # check for items that envelope this item
-            Event_enveloping = Event.objects.filter(room=Room_id, start_time__lt=starttime, end_time__gt=endtime).exists()
-            Event_items_present = Event_overlapping_start or Event_overlapping_end or Event_enveloping
-
-            if Event_items_present:
-                room = Room.objects.get(id=room_id)
-                conflict = (f"{room} is already booked at this time")
-                return render(request, "home/room.html", {"room": room, "form": form, "conflict": conflict, "cal": cal})
-            else:
-                Eventf = form.save(commit=False)
-                Eventf.save()
-                form = EventForm()
-    html_cal = formatcal(room_id)
-    cal = mark_safe(html_cal)
-    room_list = Event.objects.filter(room=room_id)
-    room = Room.objects.get(id=room_id)
-    return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list, "cal": cal})
-"""
 
     if request.user.is_authenticated:
 
