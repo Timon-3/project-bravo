@@ -7,6 +7,8 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from home.forms import EventForm, FilterForm
 from datetime import date, datetime
+from home.utils import formatcal
+from django.utils.safestring import mark_safe
 
 # Create your views here.
 class HomeListView(ListView):
@@ -64,6 +66,8 @@ class SignupView(CreateView):
 
 def roomdetail(request, room_id):
     form = EventForm(request.POST or None)
+    html_cal = formatcal()
+    cal = mark_safe(html_cal)
     if request.method == "POST":
         if form.is_valid():
             Room_id = request.POST.get("room")
@@ -78,14 +82,14 @@ def roomdetail(request, room_id):
             if Event_items_present:
                 room = Room.objects.get(id=room_id)
                 conflict = (f"{room} is already booked at this time")
-                return render(request, "home/room.html", {"room": room, "form": form, "conflict": conflict})
+                return render(request, "home/room.html", {"room": room, "form": form, "conflict": conflict, "cal": cal})
             else:
                 Eventf = form.save(commit=False)
                 Eventf.save()
                 form = EventForm()
     room_list = Event.objects.filter(room=room_id)
     room = Room.objects.get(id=room_id)
-    return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list})
+    return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list, "cal": cal})
 
 def secured(request):
     if request.user.is_authenticated:

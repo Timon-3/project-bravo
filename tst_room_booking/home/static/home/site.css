@@ -9,23 +9,35 @@
     color: white;
     padding: 8px 5px 8px 5px;
     }
-    .navbar a {
+.navbar a {
     text-decoration: none;
     color: inherit;
     }
-    .navbar-brand {
+.navbar-brand {
     font-size: 1.2em;
     font-weight: 600;
     }
-    .navbar-item {
+.navbar-item {
     font-variant: small-caps;
     margin-left: 30px;
     }
-    .body-content {
+.body-content {
     padding: 5px;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 .room_list th,td {
     text-align: left;
     padding-right: 25px;
+    }
+table {
+        table-layout: fixed;
+        border-collapse: collapse;
+    }
+.booked {
+        background-color: red;
+        color: black;
+        position: relative;
+        top: 105%;
+        height: 323%;
+        width: 100%;
     }
