@@ -18,6 +18,7 @@
         <div class="navbar">
             <ul class="nav navbar-nav">
                 <a href="{% url 'home' %}" class="navbar-brand">Home</a>
+                <a href="{% url 'search' %}" class="navbar-brand">Search</a>
                 <a href="{% url 'secured' %}" class="navbar-brand">Secured</a>
                 <div style="float: right">
                     {% if user.is_authenticated %}
