@@ -1,3 +1,12 @@
-<html>
-    <h1>Restricted area: could be used for user's data modification</h1>
-</html>
+
+{% extends "home/layout.html" %}
+{% block title %}
+Private section
+{% endblock %}
+{% block content %}
+<h1>Restricted area: could be used for:</h1>
+<li>list all user's events (reservations) - which can be selected in order to access them and modify the event if needed</li>
+<li>user's data modification - needed? psw yes, rest not really...</li>
+<li>...</li>
+
+{% endblock %}

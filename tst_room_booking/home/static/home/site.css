@@ -1,6 +1,8 @@
 .message {
+    background-color: lightgreen;
     font-weight: 600;
     color: green;
+    border: 1px;
     }
 .navbar {
     background-color: lightslategray;
