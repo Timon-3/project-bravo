@@ -20,18 +20,4 @@ class Event(models.Model):
     description = models.CharField(max_length=2000)
 
     def __str__(self) -> str:
-        return str(self.room)
-
-    def save(self, *args, **kwargs):
-        # check for items that have an overlapping start date
-        Event_overlapping_start = Event.objects.filter(start_time__gte=self.start_time, start_time__lte=self.end_time).exists()
-        # check for items that have an overlapping end date
-        Event_overlapping_end = Event.objects.filter(end_time__gte=self.start_time, end_time__lte=self.end_time).exists()
-        # check for items that envelope this item
-        Event_enveloping = Event.objects.filter(start_time__lte=self.start_time, end_time__gte=self.end_time).exists()
-        Event_items_present = Event_overlapping_start or Event_overlapping_end or Event_enveloping
-
-        if Event_items_present:
-            return 
-        else:
-            super(Event, self).save(*args, **kwargs) # Call the "real" save() method.
+        return self.description

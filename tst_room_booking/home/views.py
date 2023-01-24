@@ -4,8 +4,9 @@ from django.views.generic import ListView
 from django.views.generic.edit import CreateView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
-from home.forms import EventForm, RegisterUserForm
 from django.contrib.messages.views import SuccessMessageMixin
+from home.forms import EventForm, FilterForm, RegisterUserForm
+from datetime import date, datetime
 
 # Create your views here.
 class HomeListView(ListView):
@@ -15,6 +16,32 @@ class HomeListView(ListView):
         context = super(HomeListView, self).get_context_data(**kwargs)
         return context
 
+def search(request):
+    form = FilterForm(request.POST or None)
+    #room_list = []
+    room_list = Event.objects.none()
+    free_room = []
+    if request.method == "POST":
+        starttime = request.POST.get("start_time")
+        endtime = request.POST.get("end_time")
+        rooms_list = Room.objects.all()
+        for room in rooms_list:
+            Event_overlapping_start = Event.objects.filter(room=room.pk, start_time__gte=starttime, start_time__lt=endtime).exists()
+            Event_overlapping_end = Event.objects.filter(room=room.pk, end_time__gt=starttime, end_time__lte=endtime).exists()
+            # check for items that envelope this item
+            Event_enveloping = Event.objects.filter(room=room.pk, start_time__lte=starttime, end_time__gte=endtime).exists()
+            Event_items_present = Event_overlapping_start or Event_overlapping_end or Event_enveloping
+
+            if Event_items_present:
+                continue
+            else:
+                free_room.append(room.pk)
+        print(free_room,"1")
+        for id in free_room:
+            room = Room.objects.filter(id=id)
+            room_list = room_list | room
+        form = FilterForm()
+    return render(request, "home/search.html", {"form": form, "room_list": room_list})
 
 class LoginInterfaceView(SuccessMessageMixin, LoginView):
     template_name = "home/login.html"
@@ -42,6 +69,7 @@ class SignupView(SuccessMessageMixin, CreateView):
 
 
 def roomdetail(request, room_id):
+    """<<<<<<< upgrade-user-login-functionalities
     if request.user.is_authenticated:
         form = EventForm(request.POST or None)
         if request.method == "POST":
@@ -53,6 +81,31 @@ def roomdetail(request, room_id):
         return render(request, "home/room.html", {"room": room, "form": form})
     return redirect('/login')
 
+    ======= """
+    form = EventForm(request.POST or None)
+    if request.method == "POST":
+        if form.is_valid():
+            Room_id = request.POST.get("room")
+            starttime = request.POST.get("start_time")
+            endtime = request.POST.get("end_time")
+            Event_overlapping_start = Event.objects.filter(room=Room_id, start_time__gt=starttime, start_time__lt=endtime).exists()
+            Event_overlapping_end = Event.objects.filter(room=Room_id, end_time__gt=starttime, end_time__lt=endtime).exists()
+            # check for items that envelope this item
+            Event_enveloping = Event.objects.filter(room=Room_id, start_time__lt=starttime, end_time__gt=endtime).exists()
+            Event_items_present = Event_overlapping_start or Event_overlapping_end or Event_enveloping
+
+            if Event_items_present:
+                room = Room.objects.get(id=room_id)
+                conflict = (f"{room} is already booked at this time")
+                return render(request, "home/room.html", {"room": room, "form": form, "conflict": conflict})
+            else:
+                Eventf = form.save(commit=False)
+                Eventf.save()
+                form = EventForm()
+    room_list = Event.objects.filter(room=room_id)
+    room = Room.objects.get(id=room_id)
+    return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list})
+    # >>>>>>> main
 
 def secured(request):
     if request.user.is_authenticated:
