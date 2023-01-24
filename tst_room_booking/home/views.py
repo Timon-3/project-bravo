@@ -69,43 +69,35 @@ class SignupView(SuccessMessageMixin, CreateView):
 
 
 def roomdetail(request, room_id):
-    """<<<<<<< upgrade-user-login-functionalities
+
     if request.user.is_authenticated:
+
         form = EventForm(request.POST or None)
         if request.method == "POST":
             if form.is_valid():
-                Event = form.save(commit=False)
-                Event.user = request.user
-                Event.save()
+                Room_id = request.POST.get("room")
+                starttime = request.POST.get("start_time")
+                endtime = request.POST.get("end_time")
+                Event_overlapping_start = Event.objects.filter(room=Room_id, start_time__gt=starttime, start_time__lt=endtime).exists()
+                Event_overlapping_end = Event.objects.filter(room=Room_id, end_time__gt=starttime, end_time__lt=endtime).exists()
+                # check for items that envelope this item
+                Event_enveloping = Event.objects.filter(room=Room_id, start_time__lt=starttime, end_time__gt=endtime).exists()
+                Event_items_present = Event_overlapping_start or Event_overlapping_end or Event_enveloping
+
+                if Event_items_present:
+                    room = Room.objects.get(id=room_id)
+                    conflict = (f"{room} is already booked at this time")
+                    return render(request, "home/room.html", {"room": room, "form": form, "conflict": conflict})
+                else:
+                    Eventf = form.save(commit=False)
+                    Eventf.user = request.user
+                    Eventf.save()
+                    form = EventForm()
+        room_list = Event.objects.filter(room=room_id)
         room = Room.objects.get(id=room_id)
-        return render(request, "home/room.html", {"room": room, "form": form})
-    return redirect('/login')
-
-    ======= """
-    form = EventForm(request.POST or None)
-    if request.method == "POST":
-        if form.is_valid():
-            Room_id = request.POST.get("room")
-            starttime = request.POST.get("start_time")
-            endtime = request.POST.get("end_time")
-            Event_overlapping_start = Event.objects.filter(room=Room_id, start_time__gt=starttime, start_time__lt=endtime).exists()
-            Event_overlapping_end = Event.objects.filter(room=Room_id, end_time__gt=starttime, end_time__lt=endtime).exists()
-            # check for items that envelope this item
-            Event_enveloping = Event.objects.filter(room=Room_id, start_time__lt=starttime, end_time__gt=endtime).exists()
-            Event_items_present = Event_overlapping_start or Event_overlapping_end or Event_enveloping
-
-            if Event_items_present:
-                room = Room.objects.get(id=room_id)
-                conflict = (f"{room} is already booked at this time")
-                return render(request, "home/room.html", {"room": room, "form": form, "conflict": conflict})
-            else:
-                Eventf = form.save(commit=False)
-                Eventf.save()
-                form = EventForm()
-    room_list = Event.objects.filter(room=room_id)
-    room = Room.objects.get(id=room_id)
-    return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list})
-    # >>>>>>> main
+        return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list})
+    else:
+        return redirect('/login')
 
 def secured(request):
     if request.user.is_authenticated:
