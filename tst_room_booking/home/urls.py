@@ -17,4 +17,5 @@ urlpatterns = [
     path("signup", views.SignupView.as_view(), name="signup"),
     path('api', views.EventListApiView.as_view()),
     path('api/<int:room_id>/', views.EventDetailApiView.as_view()),
+    path('api/user', views.UserListApiView.as_view()),
 ]
