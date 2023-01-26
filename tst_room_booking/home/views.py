@@ -9,6 +9,11 @@ from home.forms import EventForm, FilterForm, RegisterUserForm
 from datetime import date, datetime
 from home.utils import formatcal
 from django.utils.safestring import mark_safe
+from rest_framework import permissions
+from home.serializers import EventSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
 # Create your views here.
 class HomeListView(ListView):
@@ -122,3 +127,43 @@ def secured(request):
 
         # return render(request, 'home/secured.html', {})
     return redirect('/login')
+
+class EventListApiView(APIView):
+    # add permission to check if user is authenticated
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    # 1. List all
+    def get(self, request, *args, **kwargs):
+        '''
+        List all the todo items for given requested user
+        '''
+        events = Event.objects.all()
+        serializer = EventSerializer(events, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class EventDetailApiView(APIView):
+    # add permission to check if user is authenticated
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_object(self, room_id):
+        '''
+        Helper method to get the Events with given room_id
+        '''
+        try:
+            return Event.objects.filter(room=room_id)
+        except Event.DoesNotExist:
+            return None
+
+    def get(self, request, room_id, *args, **kwargs):
+        '''
+        Retrieves the Events with given room_id
+        '''
+        event_instance = self.get_object(room_id)
+        if not event_instance:
+            return Response(
+                {"res": "Events with room_id does not exists"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = EventSerializer(event_instance, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
