@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from home.models import Room, Event
 from django.views.generic import ListView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, DeleteView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.messages.views import SuccessMessageMixin
@@ -9,6 +9,12 @@ from home.forms import EventForm, FilterForm, RegisterUserForm
 from datetime import date, datetime
 from home.utils import formatcal
 from django.utils.safestring import mark_safe
+from rest_framework import permissions
+from home.serializers import EventSerializer, UserSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth.models import User 
 
 # Create your views here.
 class HomeListView(ListView):
@@ -69,12 +75,17 @@ class SignupView(SuccessMessageMixin, CreateView):
         return super().get(request, *args, **kwargs)
 
 
+class EventDeleteView(DeleteView):
+    model = Event
+    success_url = '/secured'
+    template_name = "home/delete.html"
+
+
 def roomdetail(request, room_id):
+    form = EventForm(request.POST or None)
 
     if request.user.is_authenticated:
-
-        form = EventForm(request.POST or None)
-        html_cal = formatcal(room_id)
+        html_cal = formatcal(room_id, False)
         cal = mark_safe(html_cal)
         if request.method == "POST":
             if form.is_valid():
@@ -96,13 +107,18 @@ def roomdetail(request, room_id):
                     Eventf.user = request.user
                     Eventf.save()
                     form = EventForm()
-        html_cal = formatcal(room_id)
-        cal = mark_safe(html_cal) 
-        room_list = Event.objects.filter(room=room_id)
-        room = Room.objects.get(id=room_id)
-        return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list, "cal": cal})
+
+    if request.user.is_authenticated == False:
+        html_cal = formatcal(room_id, True)
     else:
-        return redirect('/login')
+        html_cal = formatcal(room_id, False)
+
+    cal = mark_safe(html_cal) 
+    room_list = Event.objects.filter(room=room_id)
+    room = Room.objects.get(id=room_id)
+
+    return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list, "cal": cal})
+
 
 def secured(request):
     if request.user.is_authenticated:
@@ -122,3 +138,56 @@ def secured(request):
 
         # return render(request, 'home/secured.html', {})
     return redirect('/login')
+
+class EventListApiView(APIView):
+    # add permission to check if user is authenticated
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    # 1. List all
+    def get(self, request, *args, **kwargs):
+        '''
+        List all the todo items for given requested user
+        '''
+        events = Event.objects.all()
+        serializer = EventSerializer(events, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class EventDetailApiView(APIView):
+    # add permission to check if user is authenticated
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_object(self, room_id):
+        '''
+        Helper method to get the Events with given room_id
+        '''
+        try:
+            return Event.objects.filter(room=room_id)
+        except Event.DoesNotExist:
+            return None
+
+    def get(self, request, room_id, *args, **kwargs):
+        '''
+        Retrieves the Events with given room_id
+        '''
+        event_instance = self.get_object(room_id)
+        if not event_instance:
+            return Response(
+                {"res": "Events with room_id does not exists"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = EventSerializer(event_instance, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class UserListApiView(APIView):
+    # add permission to check if user is authenticated
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    # 1. List all
+    def get(self, request, *args, **kwargs):
+        '''
+        List all the todo items for given requested user
+        '''
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
