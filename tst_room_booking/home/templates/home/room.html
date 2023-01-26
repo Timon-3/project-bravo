@@ -5,10 +5,12 @@ Home
 {% block content %}
 <h2>{{ room.name }}</h2>
 <h4>Room with {{ room.capacity }} places - {{ room.description }}</h4>
-<form method="POST" class="post-form">{% csrf_token %}
-    {{ form }}
-    <button type="submit" class="save btn btn-default">Save</button>
-</form>
+{% if request.user.is_authenticated %}
+    <form method="POST" class="post-form">{% csrf_token %}
+        {{ form }}
+        <button type="submit" class="save btn btn-default">Save</button>
+    </form>
+{% endif %}
 <p>{{ conflict }}</p>
 {{ cal }}
 {% endblock %}

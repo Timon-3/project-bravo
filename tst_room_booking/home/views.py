@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from home.models import Room, Event
 from django.views.generic import ListView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, DeleteView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.messages.views import SuccessMessageMixin
@@ -75,12 +75,17 @@ class SignupView(SuccessMessageMixin, CreateView):
         return super().get(request, *args, **kwargs)
 
 
+class EventDeleteView(DeleteView):
+    model = Event
+    success_url = '/secured'
+    template_name = "home/delete.html"
+
+
 def roomdetail(request, room_id):
+    form = EventForm(request.POST or None)
 
     if request.user.is_authenticated:
-
-        form = EventForm(request.POST or None)
-        html_cal = formatcal(room_id)
+        html_cal = formatcal(room_id, False)
         cal = mark_safe(html_cal)
         if request.method == "POST":
             if form.is_valid():
@@ -102,13 +107,18 @@ def roomdetail(request, room_id):
                     Eventf.user = request.user
                     Eventf.save()
                     form = EventForm()
-        html_cal = formatcal(room_id)
-        cal = mark_safe(html_cal) 
-        room_list = Event.objects.filter(room=room_id)
-        room = Room.objects.get(id=room_id)
-        return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list, "cal": cal})
+
+    if request.user.is_authenticated == False:
+        html_cal = formatcal(room_id, True)
     else:
-        return redirect('/login')
+        html_cal = formatcal(room_id, False)
+
+    cal = mark_safe(html_cal) 
+    room_list = Event.objects.filter(room=room_id)
+    room = Room.objects.get(id=room_id)
+
+    return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list, "cal": cal})
+
 
 def secured(request):
     if request.user.is_authenticated:

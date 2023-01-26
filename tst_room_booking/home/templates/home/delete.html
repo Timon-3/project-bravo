@@ -1,0 +1,18 @@
+{% extends "home/layout.html" %}
+
+{% block content %}
+<h3>Deletion for event:</h3>
+<h3>
+<tr>
+    <td>{{ event.room }}</a></td>
+    <td>{{ event.start_time }}</td>
+    <td>{{ event.end_time }}</td>
+    <td>{{ event.description }}</td>
+</tr>
+</h3>
+
+<form method="post">{% csrf_token %}
+    <p>Note this action is irreversible, please confirm if you want to proceed</p>
+    <input type="submit" value="Yes delete it"/>
+</form>
+{% endblock %}
