@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from home.models import Room, Event
 from django.views.generic import ListView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, DeleteView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.messages.views import SuccessMessageMixin
@@ -67,6 +67,12 @@ class SignupView(SuccessMessageMixin, CreateView):
         if self.request.user.is_authenticated:
             return redirect("/secured")
         return super().get(request, *args, **kwargs)
+
+
+class EventDeleteView(DeleteView):
+    model = Event
+    success_url = '/secured'
+    template_name = "home/delete.html"
 
 
 def roomdetail(request, room_id):

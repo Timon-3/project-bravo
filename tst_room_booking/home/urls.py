@@ -12,6 +12,7 @@ urlpatterns = [
     path("room/<room_id>/", views.roomdetail, name="room"),
     path("search", views.search, name="search"),
     path("secured", views.secured, name="secured"),
+    path("<pk>/delete", views.EventDeleteView.as_view(), name="delete"),
     path("login", views.LoginInterfaceView.as_view(), name="login"),
     path("logout", views.LogoutInterfaceView.as_view(), name="logout"),
     path("signup", views.SignupView.as_view(), name="signup"),
