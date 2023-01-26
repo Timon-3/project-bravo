@@ -70,11 +70,10 @@ class SignupView(SuccessMessageMixin, CreateView):
 
 
 def roomdetail(request, room_id):
+    form = EventForm(request.POST or None)
 
     if request.user.is_authenticated:
-
-        form = EventForm(request.POST or None)
-        html_cal = formatcal(room_id)
+        html_cal = formatcal(room_id, False)
         cal = mark_safe(html_cal)
         if request.method == "POST":
             if form.is_valid():
@@ -96,13 +95,18 @@ def roomdetail(request, room_id):
                     Eventf.user = request.user
                     Eventf.save()
                     form = EventForm()
-        html_cal = formatcal(room_id)
-        cal = mark_safe(html_cal) 
-        room_list = Event.objects.filter(room=room_id)
-        room = Room.objects.get(id=room_id)
-        return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list, "cal": cal})
+
+    if request.user.is_authenticated == False:
+        html_cal = formatcal(room_id, True)
     else:
-        return redirect('/login')
+        html_cal = formatcal(room_id, False)
+
+    cal = mark_safe(html_cal) 
+    room_list = Event.objects.filter(room=room_id)
+    room = Room.objects.get(id=room_id)
+
+    return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list, "cal": cal})
+
 
 def secured(request):
     if request.user.is_authenticated:
