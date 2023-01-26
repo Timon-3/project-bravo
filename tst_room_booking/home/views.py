@@ -10,10 +10,11 @@ from datetime import date, datetime
 from home.utils import formatcal
 from django.utils.safestring import mark_safe
 from rest_framework import permissions
-from home.serializers import EventSerializer
+from home.serializers import EventSerializer, UserSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.contrib.auth.models import User 
 
 # Create your views here.
 class HomeListView(ListView):
@@ -166,4 +167,17 @@ class EventDetailApiView(APIView):
             )
 
         serializer = EventSerializer(event_instance, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class UserListApiView(APIView):
+    # add permission to check if user is authenticated
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    # 1. List all
+    def get(self, request, *args, **kwargs):
+        '''
+        List all the todo items for given requested user
+        '''
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
