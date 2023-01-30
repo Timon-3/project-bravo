@@ -8,34 +8,37 @@
     </head>
     
     <body>
-        <div class="message">
+        <div class="alert-success">
             {% if messages %}
                 {% for message in messages %}
                 {{ message }}
                 {% endfor %}
             {% endif %}
         </div>
-        <div class="navbar">
-            <ul class="nav navbar-nav">
-                <a href="{% url 'home' %}" class="navbar-brand">Home</a>
-                <a href="{% url 'search' %}" class="navbar-brand">Search</a>
-                <a href="{% url 'secured' %}" class="navbar-brand">Secured</a>
-                <div style="float: right">
-                    {% if user.is_authenticated %}
-                    <button type="button" style="border-color: gray">
+
+        <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+            <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0 text-bg-dark">
+                <a href="{% url 'home' %}" class="nav-link px-2 link-secondary">Home</a>
+                <a href="{% url 'search' %}" class="nav-link px-2 link-secondary">Search</a>
+                <a href="{% url 'secured' %}" class="nav-link px-2 link-secondary">Secured</a>
+            </ul>
+            
+            <div class="col-md-3 text-end">
+                {% if user.is_authenticated %}
+                    <button type="button" class="btn btn-outline-primary me-2 btn-sm">
                         <a href="{% url 'logout' %}?next=/" class="navbar-brand">Logout</a>
                     </button>
-                    {% else %}
-                    <button type="button" style="border-color: gray">
+                {% else %}
+                    <button type="button" class="btn btn-outline-primary me-2 btn-sm">
                         <a href="{% url 'login' %}" class="navbar-brand">Login</a>
                     </button>
-                    <button type="button" style="border-color: gray">
+                    <button type="button" class="btn btn-warning btn-sm">
                         <a href="{% url 'signup' %}" class="navbar-brand">Signup</a>
                     </button>
-                    {% endif %}
-                </div>
-            </ul>
-        </div>
+                {% endif %}
+            </div>
+            
+        </header>
 
         <div class="body-content">
             {% block content %}
