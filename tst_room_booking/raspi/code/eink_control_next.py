@@ -37,12 +37,13 @@ timebox_length=timebox_end-timebox_start+1
 
 #Next Meeting variables
 next_meet_size=[300,200]
-next_meet_pos=[20,60]
+next_meet_pos=[20,70]
 next_meet_length=2
 
 # Testdata (pls change)
-next_meet_arr=json_to_dict("31.0.06")
-qr_code_text="Weblink für Raum 31.0.06"
+room_id="1"
+next_meet_arr=json_to_dict(room_id)
+qr_code_text="http://10.76.84.183:8000/room/1/"
 room_inventory={"chair": 15,"table": 10,"beamer": 1,"video": True,"wifi": False,"ethernet": True}
 
 
@@ -98,6 +99,7 @@ try:
             counter+=1
 
     # Next meetings
+    
     Himage.paste(show_next_meetings(find_next_meetings(next_meet_arr),next_meet_size,next_meet_length),next_meet_pos)
     
     # Timemodule

@@ -10,23 +10,35 @@ picdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__)
 fontdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'fonts')
 datadir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'data')
 
-name="name"
+name="user"
 starttime="start_time"
 endtime="end_time"
 description="description"
-format = "%Y-%m-%d %H:%M"
+format = "%Y-%m-%dT%H:%M:%SZ"
 format_date="%Y-%m-%d"
-
+ip_address="18.209.225.120"
+ip_address="10.76.84.183"
 
 # Import from JSON
-def json_to_dict(room_name):
-    #with urlopen("http://maps.googleapis.com/maps/api/geocode/json?address=google") as url:
-    with open(os.path.join(datadir,'reservations.json'), encoding="utf-8") as json_file:
+def json_to_dict(room_id):
+    with urlopen("http://"+ip_address+":8000/api/"+room_id+"/?format=json") as json_file:
+    #with open(os.path.join(datadir,'reservations.json'), encoding="utf-8") as json_file:
         data = json.load(json_file)
-    return data[room_name]
+    return data
+
+def get_name_from_username(username):
+    fullname=""
+    with urlopen("http://"+ip_address+":8000/api/user?format=json") as json_file:
+        data = json.load(json_file)
+    for user in data:
+        if user["username"]==username:
+            fullname=user["first_name"]+" "+user["last_name"]
+    return fullname
+
+
 
 # Creates Icons in e defined size
-def add_icon(icon_img,size=35):
+def add_icon(icon_img,size=36):
     ic_im = Image.open(icon_img)
     ic_im = ic_im.resize((size,size))
     return ic_im
@@ -79,13 +91,16 @@ def show_next_meetings(next_meet_arr,next_meet_size,next_meet_length,dt=datetime
     if next_meet_length >=1:
         desc=""
         for i in range (next_meet_length):
-            image.paste(add_icon(os.path.join(picdir,"person.png"),meeting_icon_size), (0,int(next_meet_size[1]/next_meet_length)*i))
-            image.paste(add_icon(os.path.join(picdir,"duration.png"),meeting_icon_size), (0,int(next_meet_size[1]/next_meet_length)*i+meeting_icon_size))
-            draw.text((meeting_icon_size, (next_meet_size[1]/next_meet_length)*i+meeting_icon_size/6), next_meet_arr[i][name], font = meeting_font)
-            meeting_date=""
-            next_meeting_date=next_meet_arr[i][starttime][:next_meet_arr[i][starttime].index(" ")]
+            image.paste(add_icon(os.path.join(picdir,"duration.png"),meeting_icon_size), (0,int(next_meet_size[1]/next_meet_length)*i))
+            image.paste(add_icon(os.path.join(picdir,"person.png"),meeting_icon_size), (0,int(next_meet_size[1]/next_meet_length)*i+meeting_icon_size))
+
+            meeting_date="Heute -"
+            next_meeting_date=next_meet_arr[i][starttime][:next_meet_arr[i][starttime].index("T")]
             if date_now<next_meeting_date:meeting_date=next_meeting_date[-2:]+"."+next_meeting_date[-5:-3]+"."+next_meeting_date[:4]+" - "
-            draw.text((meeting_icon_size, (next_meet_size[1]/next_meet_length)*i+meeting_icon_size+meeting_icon_size/6),meeting_date+next_meet_arr[i][starttime][-5:]+"-"+next_meet_arr[i][endtime][-5:], font = meeting_font)
+            draw.text((meeting_icon_size, (next_meet_size[1]/next_meet_length)*i+meeting_icon_size/6),meeting_date+next_meet_arr[i][starttime][-9:-4]+"-"+next_meet_arr[i][endtime][-9:-4], font = meeting_font)
+
+            draw.text((meeting_icon_size, (next_meet_size[1]/next_meet_length)*i+meeting_icon_size+meeting_icon_size/6), get_name_from_username(next_meet_arr[i][name]), font = meeting_font)
+            
             if len(next_meet_arr[i][description])>=30: desc=next_meet_arr[i][description][0:28]+"..."
             else: desc=next_meet_arr[i][description]
             draw.text((0, (next_meet_size[1]/next_meet_length)*i+2*meeting_icon_size), desc, font = meeting_desc_font)
@@ -134,10 +149,10 @@ def show_time_module(meet_arr,timebox_size,timebox_length,timebox_start,dt=datet
     
     # Add Events to Timemodule
     for meeting in todays_meetings:
-        if date_now<meeting[starttime][:meeting[starttime].index(" ")]:
+        if date_now<meeting[starttime][:meeting[starttime].index("T")]:
             continue
-        meeting_starttime=meeting[starttime][-5:]
-        meeting_endtime=meeting[endtime][-5:]
+        meeting_starttime=meeting[starttime][-9:-4]
+        meeting_endtime=meeting[endtime][-9:-4]
         starttime_float=float(meeting_starttime[:2])+1/60*float(meeting_starttime[-2:])
         endtime_float=float(meeting_endtime[:2])+1/60*float(meeting_endtime[-2:])
         draw.rounded_rectangle((timebox_size[0]/3.5,timebox_size[1]/timebox_length*(starttime_float-timebox_start)+offset,timebox_size[0]/10*9,timebox_size[1]/timebox_length*(endtime_float-timebox_start)+offset),outline = 1, fill = 0,radius=5) 
