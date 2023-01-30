@@ -6,7 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.messages.views import SuccessMessageMixin
 from home.forms import EventForm, FilterForm, RegisterUserForm
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from home.utils import formatcal
 from django.utils.safestring import mark_safe
 from rest_framework import permissions
@@ -74,13 +74,31 @@ class SignupView(SuccessMessageMixin, CreateView):
             return redirect("/secured")
         return super().get(request, *args, **kwargs)
 
+def add(d):
+    d = datetime.strptime(d,"%Y-%d-%m")
+    d = d + timedelta(days=7)
+    d = d.strftime("%Y-%d-%m")
+    return "d=" + d
+
+def dect(d):
+    d = datetime.strptime(d,"%Y-%d-%m")
+    d = d - timedelta(days=7)
+    d = d.strftime("%Y-%d-%m")
+    return "d=" + d
+
+def get_date(d):
+    if d:
+        return d
+    return date.today().strftime("%Y-%d-%m")
 
 def roomdetail(request, room_id):
 
     if request.user.is_authenticated:
-
+        d = get_date(request.GET.get('d', None))
+        add_cal = add(d)
+        dect_cal = dect(d)
         form = EventForm(request.POST or None)
-        html_cal = formatcal(room_id)
+        html_cal = formatcal(room_id, d)
         cal = mark_safe(html_cal)
         if request.method == "POST":
             if form.is_valid():
@@ -96,17 +114,17 @@ def roomdetail(request, room_id):
                 if Event_items_present:
                     room = Room.objects.get(id=room_id)
                     conflict = (f"{room} is already booked at this time")
-                    return render(request, "home/room.html", {"room": room, "form": form, "conflict": conflict, "cal": cal})
+                    return render(request, "home/room.html", {"room": room, "form": form, "conflict": conflict, "cal": cal, "add_cal": add_cal, "dect_cal": dect_cal})
                 else:
                     Eventf = form.save(commit=False)
                     Eventf.user = request.user
                     Eventf.save()
                     form = EventForm()
-        html_cal = formatcal(room_id)
+        html_cal = formatcal(room_id, d)
         cal = mark_safe(html_cal) 
         room_list = Event.objects.filter(room=room_id)
         room = Room.objects.get(id=room_id)
-        return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list, "cal": cal})
+        return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list, "cal": cal, "add_cal": add_cal, "dect_cal": dect_cal})
     else:
         return redirect('/login')
 

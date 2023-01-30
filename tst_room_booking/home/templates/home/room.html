@@ -10,5 +10,11 @@ Home
     <button type="submit" class="save btn btn-default">Save</button>
 </form>
 <p>{{ conflict }}</p>
+<button type="button" style="border-color: gray">
+    <a href="{% url 'room' room.id %}?{{ dect_cal }}">Previous Week</a>
+</button>
+<button type="button" style="border-color: gray">
+    <a href="{% url 'room' room.id %}?{{ add_cal }}">Next Week</a>
+</button>
 {{ cal }}
 {% endblock %}
