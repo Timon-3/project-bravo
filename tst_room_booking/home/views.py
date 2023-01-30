@@ -99,11 +99,10 @@ class EventDeleteView(DeleteView):
 
 def roomdetail(request, room_id):
     form = EventForm(request.POST or None)
-
+    d = get_date(request.GET.get('d', None))
+    add_cal = add(d)
+    dect_cal = dect(d)
     if request.user.is_authenticated:
-        d = get_date(request.GET.get('d', None))
-        add_cal = add(d)
-        dect_cal = dect(d)
         form = EventForm(request.POST or None)
         html_cal = formatcal(room_id, d, False)
         cal = mark_safe(html_cal)
@@ -127,23 +126,23 @@ def roomdetail(request, room_id):
                     Eventf.user = request.user
                     Eventf.save()
                     form = EventForm()
-        html_cal = formatcal(room_id, d)
+        html_cal = formatcal(room_id, d, False)
         cal = mark_safe(html_cal) 
         room_list = Event.objects.filter(room=room_id)
         room = Room.objects.get(id=room_id)
         return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list, "cal": cal, "add_cal": add_cal, "dect_cal": dect_cal})
 
     if request.user.is_authenticated == False:
-        html_cal = formatcal(room_id, True)
+        html_cal = formatcal(room_id, d, True)
 
     else:
-        html_cal = formatcal(room_id, False)
+        html_cal = formatcal(room_id, d, False)
 
     cal = mark_safe(html_cal) 
     room_list = Event.objects.filter(room=room_id)
     room = Room.objects.get(id=room_id)
 
-    return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list, "cal": cal})
+    return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list, "cal": cal, "add_cal": add_cal, "dect_cal": dect_cal})
 
 
 def secured(request):
