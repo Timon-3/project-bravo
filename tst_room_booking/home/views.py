@@ -101,15 +101,11 @@ def roomdetail(request, room_id):
     form = EventForm(request.POST or None)
 
     if request.user.is_authenticated:
-<<<<<<< HEAD
         d = get_date(request.GET.get('d', None))
         add_cal = add(d)
         dect_cal = dect(d)
         form = EventForm(request.POST or None)
-        html_cal = formatcal(room_id, d)
-=======
-        html_cal = formatcal(room_id, False)
->>>>>>> 563ffe058c8e85bfcb6f73924f050aa14face278
+        html_cal = formatcal(room_id, d, False)
         cal = mark_safe(html_cal)
         if request.method == "POST":
             if form.is_valid():
@@ -131,17 +127,15 @@ def roomdetail(request, room_id):
                     Eventf.user = request.user
                     Eventf.save()
                     form = EventForm()
-<<<<<<< HEAD
         html_cal = formatcal(room_id, d)
         cal = mark_safe(html_cal) 
         room_list = Event.objects.filter(room=room_id)
         room = Room.objects.get(id=room_id)
         return render(request, "home/room.html", {"room": room, "form": form, "room_list": room_list, "cal": cal, "add_cal": add_cal, "dect_cal": dect_cal})
-=======
 
     if request.user.is_authenticated == False:
         html_cal = formatcal(room_id, True)
->>>>>>> 563ffe058c8e85bfcb6f73924f050aa14face278
+
     else:
         html_cal = formatcal(room_id, False)
 
