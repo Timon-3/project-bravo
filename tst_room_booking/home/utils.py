@@ -36,7 +36,7 @@ def formatcal(room_id, cal_date, hidden_description):
     sunday = monday + timedelta(days=6)
     weekdatetime = [monday,tuesday,wednesday,thursday,friday,saturday,sunday]
     week = [monday.day,tuesday.day,wednesday.day,thursday.day,friday.day,saturday.day,sunday.day]
-    cal = f'<table border="1" width="100%" height="500">'
+    cal = f'<table class="table table-striped" border="1" width="100%" height="500">'
     cal += "<tr><td style='width: 5%;'></td><td>Montag</td><td>Dienstag</td><td>Mittwoch</td><td>Donnerstag</td><td>Freitag</td><td>Samstag</td><td>Sonntag</td></tr>"
     line2 = "<td style='width: 5%;'></td>"
     for day in weekdatetime:

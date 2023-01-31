@@ -11287,3 +11287,12 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+
+table{
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+table tr,td {
+text-align: center;
+padding-right: 0px;
+}
