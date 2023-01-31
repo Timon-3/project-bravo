@@ -23,7 +23,7 @@ class EventForm(forms.ModelForm):
         'start_time': DateInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
         'end_time': DateInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
         }
-        fields = ('room', 'start_time', 'end_time', 'description')
+        fields = ('room', 'description', 'start_time', 'end_time')
 
     def __init__(self, *args, **kwargs):
         super(EventForm, self).__init__(*args, **kwargs)

@@ -4,9 +4,22 @@ search
 {% endblock %}
 {% block content %}
 <form method="POST" class="get-form">{% csrf_token %}
-    {{ form }}
-    <button type="submit" class="save btn btn-default">Save</button>
+
+    <div class="container" style="margin-bottom: 1.5%;">
+        <div class="row">
+            {% for field in form %}
+                <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3"> 
+                    <p> {{ field.label_tag }} </p>
+                    <p> {{ field }} </p>
+                </div>
+            {% endfor %}
+        <div>
+            <button type="submit" class="btn btn-primary btn-sm">Search</button>
+        </div>
+        </div>
+    </div>
 </form>
+
 <h2>List of Available Rooms</h2>
 {% if room_list %}
 <table class="room_list">
