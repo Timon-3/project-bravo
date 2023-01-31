@@ -1,0 +1,13 @@
+{% extends "home/layout.html" %}
+{% block title %}
+Modify
+{% endblock %}
+{% block content %}
+<form method="POST" class="post-form">{% csrf_token %}
+    {{ form }}
+    <button type="submit" class="save btn btn-default">Modify</button>
+</form>
+{% if conflict %}
+    <p class="alert alert-danger" role="alert">{{ conflict }}</p>
+ {% endif %}
+{% endblock %}

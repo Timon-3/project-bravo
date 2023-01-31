@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from home.models import Room, Event
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, DeleteView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.messages.views import SuccessMessageMixin
-from home.forms import EventForm, FilterForm, RegisterUserForm
+from home.forms import EventForm, FilterForm, RegisterUserForm, ModifyForm
 from datetime import date, datetime, timedelta
 from home.utils import formatcal
 from django.utils.safestring import mark_safe
@@ -15,6 +15,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User 
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 
 # Create your views here.
@@ -258,3 +260,30 @@ class UserListApiView(APIView):
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+def modify(request, event_id=None):
+    instance = Event()
+    if event_id:
+        instance = get_object_or_404(Event, pk=event_id)
+    else:
+        instance = Event()
+    event_id = event_id
+    form = ModifyForm(request.POST or None, instance=instance)
+    if request.POST and form.is_valid():
+        Room_id = request.POST.get("room")
+        starttime = request.POST.get("start_time")
+        endtime = request.POST.get("end_time")
+        Event_overlapping_start = Event.objects.filter(room=Room_id, start_time__gt=starttime, start_time__lt=endtime).exclude(id=event_id).exists()
+        Event_overlapping_end = Event.objects.filter(room=Room_id, end_time__gt=starttime, end_time__lt=endtime).exclude(id=event_id).exists()
+        # check for items that envelope this item
+        Event_enveloping = Event.objects.filter(room=Room_id, start_time__lt=starttime, end_time__gt=endtime).exclude(id=event_id).exists()
+        Event_overlapping_start_end = Event.objects.filter(room=Room_id, start_time=starttime, end_time=endtime).exclude(id=event_id).exists()
+        Event_items_present = Event_overlapping_start or Event_overlapping_end or Event_enveloping or Event_overlapping_start_end
+        if Event_items_present:
+            room = Room.objects.get(id=Room_id)
+            conflict = (f"you can't modify this event the {room} is already booked at this time")
+            return render(request, "home/modify.html", {"form": form, "conflict": conflict})
+        else:
+            form.save()
+            return HttpResponseRedirect(reverse('secured'))
+    return render(request, 'home/modify.html', {'form': form})

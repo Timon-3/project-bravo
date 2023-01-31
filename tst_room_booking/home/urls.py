@@ -19,4 +19,5 @@ urlpatterns = [
     path('api', views.EventListApiView.as_view()),
     path('api/<int:room_id>/', views.EventDetailApiView.as_view()),
     path('api/user', views.UserListApiView.as_view()),
+    path('modify/<event_id>/', views.modify, name='modify')
 ]
