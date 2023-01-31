@@ -16,6 +16,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User 
 
+
 # Create your views here.
 class HomeListView(ListView):
     """Renders the home page, with a list of all Rooms"""
@@ -147,6 +148,7 @@ def roomdetail(request, room_id):
 
 def secured(request):
     if request.user.is_authenticated:
+        date_format = "%d.%m.%Y %H:%M"
 
         event_list = Event.objects.none()
         events_list = Event.objects.all()
@@ -154,15 +156,24 @@ def secured(request):
         for event in events_list:
             if event.user == request.user:
                 user_events.append(event.pk)
-        print(user_events,"1")
+        # print(user_events,"1")
         for id in user_events:
             event = Event.objects.filter(id=id)
-            print("event: ",event)
             event_list = event_list | event
+            #print(event_list[0].pk)
+            #event_list_2 = [event_list[0].pk, event_list[0].room, event_list[0].description, (str(event_list[0].start_time.strftime(date_format))), (str(event_list[0].end_time.strftime(date_format)))]
+            """print(event_list)
+            print(event_list_2)
+            print(type(event_list[0].end_time))
+            tmp_var = event_list[0].end_time
+            tmp_list = (str(event_list[0].end_time.strftime(date_format)))
+            print(type(tmp_list))
+            print(type(event_list[0].end_time)) """
         return render(request, "home/secured.html", {"event_list": event_list})
 
         # return render(request, 'home/secured.html', {})
     return redirect('/login')
+
 
 class EventListApiView(APIView):
     # add permission to check if user is authenticated
@@ -176,6 +187,7 @@ class EventListApiView(APIView):
         events = Event.objects.all()
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class EventDetailApiView(APIView):
     # add permission to check if user is authenticated
