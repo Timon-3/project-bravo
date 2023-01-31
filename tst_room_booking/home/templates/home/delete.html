@@ -13,7 +13,7 @@
 
 <form method="post">{% csrf_token %}
     <p>Note this action is irreversible, please confirm if you want to proceed or <a href="{% url 'secured' %}" style="color: blue">go back</a></p>
-    <input type="submit" value="Yes delete it"/>
+    <input type="submit" class="btn btn-danger btn-sm" value="Yes delete it"/>
 </form>
 
 {% endblock %}

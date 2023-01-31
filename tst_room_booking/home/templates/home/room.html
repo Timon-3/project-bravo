@@ -8,7 +8,7 @@ Home
 {% if request.user.is_authenticated %}
     <form method="POST" class="post-form">{% csrf_token %}
         {{ form }}
-        <button type="submit" class="save btn btn-default">Save</button>
+        <button type="submit" class="btn btn-primary btn-sm" style="margin-left: 1%;">Save</button>
     </form>
 {% endif %}
 {% if conflict %}

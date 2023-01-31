@@ -6,7 +6,7 @@ def formatevent(starttime, endtime, description):
     min = (starttime.minute)
     height = timediff * 100 + timediff//1*7
     top = (height - 100) / 2 + min/0.6
-    return f"<div style='background-color: red; color: black; position: relative; top: {top}%; height: {height}%; width: 100%;'>{description}</div>"
+    return f"<div style='font-weight: bold; color: rgb(224 224 234); position: relative; top: {top}%; height: {height}%; width: 100%; background-color:rgb(64 104 137);border-radius:6px;background-image: linear-gradient(to bottom right, rgb(64 104 137), rgb(124 164 207));box-shadow: 4px 4px lightgrey'>{description}</div>"
 
 def formatrow(week, hour, room_id, monday, sunday, hidden_description):
     events = Event.objects.filter(start_time__hour=hour, room=room_id, start_time__gt=monday, start_time__lt=sunday)
@@ -36,7 +36,7 @@ def formatcal(room_id, cal_date, hidden_description):
     sunday = monday + timedelta(days=6)
     weekdatetime = [monday,tuesday,wednesday,thursday,friday,saturday,sunday]
     week = [monday.day,tuesday.day,wednesday.day,thursday.day,friday.day,saturday.day,sunday.day]
-    cal = f'<table class="table table-striped" border="1" width="100%" height="500">'
+    cal = f'<table border="1" width="100%" height="500">'
     cal += "<tr><td style='width: 5%;'></td><td>Montag</td><td>Dienstag</td><td>Mittwoch</td><td>Donnerstag</td><td>Freitag</td><td>Samstag</td><td>Sonntag</td></tr>"
     line2 = "<td style='width: 5%;'></td>"
     for day in weekdatetime:
