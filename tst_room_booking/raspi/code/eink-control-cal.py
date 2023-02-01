@@ -4,6 +4,7 @@ import sys
 import os
 import qrcode # pip install qrcode[pil]
 picdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic')
+fontdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'fonts')
 libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
 if os.path.exists(libdir):
     sys.path.append(libdir)
@@ -32,9 +33,9 @@ qr_code_text="Let it snow!"
 
 start_time=6
 
-cal_font = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), int(calendar_size[1]/20))
-font24 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
-font34 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 34)
+cal_font = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), int(calendar_size[1]/20))
+font24 = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 24)
+font34 = ImageFont.truetype(os.path.join(fontdir, 'Font.ttc'), 34)
 
 try:
     logging.info("Roomreservation")

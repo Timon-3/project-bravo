@@ -16,13 +16,18 @@ endtime="end_time"
 description="description"
 format = "%Y-%m-%dT%H:%M:%SZ"
 format_date="%Y-%m-%d"
-ip_address="18.209.225.120"
-ip_address="10.76.84.183"
-
+ip_address="100.25.159.195" #Server
+# admin 12345
+#ip_address="10.76.84.183" #Timon
+#ip_address="10.76.87.242" #Stefano
+room_id="2"
+room_url="http://"+ip_address+":8000/api/"+room_id+"/?format=json"
+# http://100.25.159.195:8000/api/2/?format=json
 # Import from JSON
-def json_to_dict(room_id):
+def json_to_dict():
     with urlopen("http://"+ip_address+":8000/api/"+room_id+"/?format=json") as json_file:
     #with open(os.path.join(datadir,'reservations.json'), encoding="utf-8") as json_file:
+        
         data = json.load(json_file)
     return data
 
@@ -46,7 +51,7 @@ def add_icon(icon_img,size=36):
 
 
 # Create and add QR Code
-def add_qrcode(qr_code_text,size=90):
+def add_qrcode(qr_code_text="http://"+ip_address+":8000/room/"+room_id+"/",size=90):
     qr_img=qrcode.make(qr_code_text)
     qr_img = qr_img.resize((size,size),resample=5)
     return qr_img
@@ -111,7 +116,6 @@ def show_next_meetings(next_meet_arr,next_meet_size,next_meet_length,dt=datetime
 # Searches for the next (max x) meetings
 def find_next_meetings(meetings_list,datetime_now=datetime.now()):
     next_meetings_list=[]
-    date_now=datetime_now.date()
 
     for meetings in meetings_list:
         meeting_end=datetime.strptime(meetings[endtime],format)
@@ -119,17 +123,6 @@ def find_next_meetings(meetings_list,datetime_now=datetime.now()):
             next_meetings_list.append(meetings)
     return next_meetings_list
 
-# # Searches for the next (max x) meetings old
-# def find_next_meetings(meetings_list,datetime_now=datetime.now()):
-#     date_now=datetime_now.strftime("%d.%m.%Y")
-#     time_now=datetime_now.strftime("%H:%M")
-#     format = "%Y-%m-%d %H:%M"
-#     next_meetings_list=[]
-#     for meetings in meetings_list:
-#         if meetings[starttime][-5:]==date_now:
-#             if time_now < meetings[endtime]:
-#                 next_meetings_list.append(meetings)
-#     return next_meetings_list
 
 # Timemodule
 def show_time_module(meet_arr,timebox_size,timebox_length,timebox_start,dt=datetime.now()):
@@ -151,6 +144,14 @@ def show_time_module(meet_arr,timebox_size,timebox_length,timebox_start,dt=datet
     for meeting in todays_meetings:
         if date_now<meeting[starttime][:meeting[starttime].index("T")]:
             continue
+        
+        # elif date_now>meeting[starttime][:meeting[starttime].index("T")] and date_now==meeting[endtime][:meeting[endtime].index("T")]:
+        #     meeting_starttime=str(timebox_start).zfill(2)+":00"
+        #     meeting_endtime=meeting[endtime][-9:-4]
+        # elif date_now>meeting[starttime][:meeting[starttime].index("T")] and date_now<meeting[endtime][:meeting[endtime].index("T")]:
+        #     meeting_starttime=str(timebox_start).zfill(2)+":00"
+        #     meeting_endtime=str(timebox_start+timebox_length).zfill(2)+":00"
+        # else:
         meeting_starttime=meeting[starttime][-9:-4]
         meeting_endtime=meeting[endtime][-9:-4]
         starttime_float=float(meeting_starttime[:2])+1/60*float(meeting_starttime[-2:])
@@ -162,9 +163,8 @@ def show_time_module(meet_arr,timebox_size,timebox_length,timebox_start,dt=datet
     draw.line(((timebox_size[0]/timebox_length*3.5), (timebox_size[1]/timebox_length*timedot_pos)+offset,(timebox_size[0]*0.75+1), (timebox_size[1]/timebox_length*timedot_pos)+offset),width = 3,fill=1)
     draw.line(((timebox_size[0]/timebox_length*3.5), (timebox_size[1]/timebox_length*timedot_pos)+offset,(timebox_size[0]*0.75), (timebox_size[1]/timebox_length*timedot_pos)+offset),width = 1)
     draw.ellipse(((timebox_size[0]/timebox_length*3.5)-3, (timebox_size[1]/timebox_length*timedot_pos)-3+offset,(timebox_size[0]/timebox_length*3.5)+3, (timebox_size[1]/timebox_length*timedot_pos)+3+offset),outline = 1, fill = 0)
-
+    
     return image
-
     
 def centre_image(size,message="",font=""):
     W, H = size
