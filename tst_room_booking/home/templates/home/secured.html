@@ -3,9 +3,12 @@
 My events
 {% endblock %}
 {% block content %}
+
+{% if conflict %}
+    <p class="alert alert-danger" role="alert">{{ conflict }}</p>
+{% endif %}
+
 <h2>Your registered events:</h2>
-<!-- <li> all user's events (reservations) - should be selected (or add button at the end) in order to access them and modify the event if needed</li>
-<li> user's data modification - needed? psw yes, rest not really...</li> -->
 
 <div class="container">
     <div class="row">
