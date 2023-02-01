@@ -10,7 +10,7 @@ from datetime import date, datetime, timedelta
 from home.utils import formatcal
 from django.utils.safestring import mark_safe
 from rest_framework import permissions
-from home.serializers import EventSerializer, UserSerializer
+from home.serializers import EventSerializer, UserSerializer, RoomSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -252,6 +252,19 @@ class UserListApiView(APIView):
         '''
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class RoomListApiView(APIView):
+    # add permission to check if user is authenticated
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    # 1. List all
+    def get(self, request, *args, **kwargs):
+        '''
+        List all the todo items for given requested user
+        '''
+        room = Room.objects.all()
+        serializer = RoomSerializer(room, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

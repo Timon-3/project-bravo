@@ -1,4 +1,4 @@
-from home.models import Event
+from home.models import Event, Room
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
@@ -16,3 +16,9 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('pk', 'username', 'first_name', 'last_name', 'email')
+
+class RoomSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Room
+        fields = ['name', 'capacity', 'description', 'image', 'chairs', 'tables', 'beamer', 'video', 'ethernet', 'wlan']

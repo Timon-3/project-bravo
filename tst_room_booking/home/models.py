@@ -6,8 +6,15 @@ from django.contrib.auth.models import User
 
 class Room(models.Model):
     name = models.CharField(max_length=200)
-    capacity = models.IntegerField()
+    capacity = models.IntegerField(default=0)
     description = models.CharField(max_length=2000)
+    image = models.ImageField(default=None)
+    chairs = models.IntegerField(default=0)
+    tables = models.IntegerField(default=0)
+    beamer = models.IntegerField(default=0)
+    video = models.BooleanField(default=False)
+    ethernet = models.BooleanField(default=False)
+    wlan = models.BooleanField(default=False)
     def __str__(self) -> str:
         return self.name
 
@@ -21,3 +28,5 @@ class Event(models.Model):
 
     def __str__(self) -> str:
         return self.description
+
+    
