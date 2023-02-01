@@ -2,12 +2,11 @@
 # -*- coding:utf-8 -*-
 
 
-#   Added with crontab -e the script to cron
+#   Added with 'crontab -e' the script to cron
 #   */5 * * * * python3 /home/pi/Desktop/project-bravo/tst_room_booking/raspi/code/eink_control_next.py
 #
 import sys
 import os
-import qrcode # pip install qrcode[pil]
 fontdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'fonts')
 picdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'pic')
 libdir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'lib')
@@ -16,12 +15,8 @@ if os.path.exists(libdir):
 
 import logging
 from waveshare_epd import epd4in2
-import time
-import locale
 from PIL import Image,ImageDraw,ImageFont
-import traceback
-from datetime import datetime, date
-
+from datetime import datetime
 from eink_tools import *
 
 logging.basicConfig(level=logging.INFO)
@@ -30,10 +25,9 @@ logging.basicConfig(level=logging.INFO)
 # positioning and size variables
 timebox_size=[100,180]
 timebox_pos=[300,90]
-timebox_start=6
+timebox_start=7
 timebox_end=19
 timebox_length=timebox_end-timebox_start+1
-
 
 #Next Meeting variables
 next_meet_size=[300,200]
@@ -41,10 +35,9 @@ next_meet_pos=[20,70]
 next_meet_length=2
 
 # Testdata (pls change)
-room_id="1"
-next_meet_arr=json_to_dict(room_id)
-qr_code_text="http://10.76.84.183:8000/room/1/"
-room_inventory={"chair": 15,"table": 10,"beamer": 1,"video": True,"wifi": False,"ethernet": True}
+room_id="4"
+next_meet_arr=json_to_dict()
+room_inventory={"chair": 15,"table": 15,"beamer": 2,"video": True,"ethernet": True,"wifi": True}
 
 
 # other variables
@@ -63,8 +56,6 @@ title_font = ImageFont.truetype(os.path.join(fontdir, 'Roboto-Bold.ttf'), 23)
 date_font = ImageFont.truetype(os.path.join(fontdir, 'Roboto-Regular.ttf'), 17)
 font34 = ImageFont.truetype(os.path.join(fontdir, 'Roboto-Black.ttf'), 34)
 
-
-
 try:
     logging.info("Roomreservation")
     
@@ -79,7 +70,7 @@ try:
     draw = ImageDraw.Draw(Himage)
     
     # Add Date
-    draw.text((10, 0), "Raum 31.0.06", font = title_font, fill = 0)
+    draw.text((10, 0), "Raum 31.0.09", font = title_font, fill = 0)
     draw.text((10, 25), weekdays[weekday_today-1] +", "+ str(dt.strftime('%d.%m.%Y')), font = date_font, fill = 0)
     #Himage.paste(centre_text((200,100),weekdays[weekday_today-1] +", "+ str(dt.strftime('%d.%m.%Y')),date_font))
 
@@ -87,7 +78,7 @@ try:
     draw.text((190, 0), room_state(next_meet_arr), font = font34, fill = 0)
 
     # Add QR-Code
-    Himage.paste(add_qrcode(qr_code_text), (315,0))
+    Himage.paste(add_qrcode(), (315,0))
 
     # Roominfo shows all the Roomsymbols with informations
     counter=0
