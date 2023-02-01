@@ -26,16 +26,16 @@
             
             <div class="col-md-3 text-end">
                 {% if user.is_authenticated %}
-                    <button type="button" class="btn btn-outline-primary me-2 btn-sm">
-                        <a href="{% url 'logout' %}?next=/" class="navbar-brand">Logout</a>
-                    </button>
+                    <a href="{% url 'logout' %}?next=/">
+                        <button type="button" class="btn btn-outline-primary me-3">Logout</button>
+                    </a>
                 {% else %}
-                    <button type="button" class="btn btn-outline-primary me-2 btn-sm">
-                        <a href="{% url 'login' %}" class="navbar-brand">Login</a>
-                    </button>
-                    <button type="button" class="btn btn-warning btn-sm">
-                        <a href="{% url 'signup' %}" class="navbar-brand">Signup</a>
-                    </button>
+                    <a href="{% url 'login' %}">
+                        <button type="button" class="btn btn-outline-primary">Login</button>
+                    </a>
+                    <a href="{% url 'signup' %}">
+                        <button type="button" class="btn btn-warning me-3">Signup</button>
+                    </a>
                 {% endif %}
             </div>
             

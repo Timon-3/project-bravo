@@ -3,14 +3,18 @@
 My events
 {% endblock %}
 {% block content %}
+
+{% if conflict %}
+    <p class="alert alert-danger" role="alert">{{ conflict }}</p>
+{% endif %}
+
 <h2>Your registered events:</h2>
-<!-- <li> all user's events (reservations) - should be selected (or add button at the end) in order to access them and modify the event if needed</li>
-<li> user's data modification - needed? psw yes, rest not really...</li> -->
 
 <div class="container">
     <div class="row">
         {% for event in event_list %}
-            <table class="card bg-light mb-3 col-12 col-sm-6 col-md-6 col-lg-3 col-xl-3" style="border-color: black; border-style: solid; border-width: 1; border-radius: 1; text-align: left; margin: 1.5%; align-items: center;">
+            <table class="card bg-light mb-3 col-12 col-sm-6 col-md-6 col-lg-3 col-xl-3"
+                    style="border-color: black; border-style: solid; border-width: 1; border-radius: 1; text-align: left; margin: 1.5%; align-items: center;">
 
                     <tr>
                         <td>{{ event.room }}</a></td>
@@ -19,19 +23,20 @@ My events
                         <td>{{ event.description }}</td>
                     </tr>
                     <tr>
-                        <td>Start: {{event.start_time }}</td>
+                        <td>Start:  {{event.start_time }}</td>
                     </tr>
                     <tr>
                         <td>End: {{ event.end_time }}</td>
                     </tr>
                     <tr>
                         <td>
-                            <button type= "button" class="btn btn-outline-warning btn-sm">
-                                <a href="{% url 'modify' event.id %}" style="color: darkgoldenrod;">Modify</a>
-                            </button>
-                            <button type= "button" class="btn btn-outline-danger btn-sm">
-                                <a href="{% url 'delete' event.id %}" style="color: darkred">Delete</a>
-                            </button>
+                            <a href="{% url 'modify' event.id %}" style="color: darkgoldenrod">
+                                <button type= "button" class="btn btn-outline-warning btn-sm"> Modify </button>
+                            </a>
+
+                            <a href="{% url 'delete' event.id %}" style="color: darkred">
+                                <button type= "button" class="btn btn-outline-danger btn-sm">Delete</button>
+                            </a>
                         </td>
                     </tr>
                 

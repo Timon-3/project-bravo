@@ -99,6 +99,12 @@ class EventDeleteView(DeleteView):
     success_url = '/secured'
     template_name = "home/delete.html"
 
+    # make sure only users who are logged in can access the delete event page
+    def get(self, request, *args, **kwargs):
+        if self.request.user.is_anonymous:
+            return redirect("/login")
+        return super().get(request, *args, **kwargs)
+
 
 def roomdetail(request, room_id):
     form = EventForm(request.POST or None, initial={'room': room_id})
@@ -180,31 +186,18 @@ def roomdetail(request, room_id):
 
 def secured(request):
     if request.user.is_authenticated:
-        date_format = "%d.%m.%Y %H:%M"
-
         event_list = Event.objects.none()
         events_list = Event.objects.all()
-        user_events = []  # -> free_room
+        user_events = []  
         for event in events_list:
             if event.user == request.user:
                 user_events.append(event.pk)
-        # print(user_events,"1")
         for id in user_events:
             event = Event.objects.filter(id=id)
             event_list = event_list | event
-            #print(event_list[0].pk)
-            #event_list_2 = [event_list[0].pk, event_list[0].room, event_list[0].description, (str(event_list[0].start_time.strftime(date_format))), (str(event_list[0].end_time.strftime(date_format)))]
-            """print(event_list)
-            print(event_list_2)
-            print(type(event_list[0].end_time))
-            tmp_var = event_list[0].end_time
-            tmp_list = (str(event_list[0].end_time.strftime(date_format)))
-            print(type(tmp_list))
-            print(type(event_list[0].end_time)) """
         return render(request, "home/secured.html", {"event_list": event_list})
-
-        # return render(request, 'home/secured.html', {})
-    return redirect('/login')
+    else:
+        return redirect('/login')
 
 
 class EventListApiView(APIView):
@@ -261,29 +254,39 @@ class UserListApiView(APIView):
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 def modify(request, event_id=None):
-    instance = Event()
-    if event_id:
-        instance = get_object_or_404(Event, pk=event_id)
-    else:
-        instance = Event()
-    event_id = event_id
-    form = ModifyForm(request.POST or None, instance=instance)
-    if request.POST and form.is_valid():
-        Room_id = request.POST.get("room")
-        starttime = request.POST.get("start_time")
-        endtime = request.POST.get("end_time")
-        Event_overlapping_start = Event.objects.filter(room=Room_id, start_time__gt=starttime, start_time__lt=endtime).exclude(id=event_id).exists()
-        Event_overlapping_end = Event.objects.filter(room=Room_id, end_time__gt=starttime, end_time__lt=endtime).exclude(id=event_id).exists()
-        # check for items that envelope this item
-        Event_enveloping = Event.objects.filter(room=Room_id, start_time__lt=starttime, end_time__gt=endtime).exclude(id=event_id).exists()
-        Event_overlapping_start_end = Event.objects.filter(room=Room_id, start_time=starttime, end_time=endtime).exclude(id=event_id).exists()
-        Event_items_present = Event_overlapping_start or Event_overlapping_end or Event_enveloping or Event_overlapping_start_end
-        if Event_items_present:
-            room = Room.objects.get(id=Room_id)
-            conflict = (f"you can't modify this event the {room} is already booked at this time")
-            return render(request, "home/modify.html", {"form": form, "conflict": conflict})
+    event_owner = Event.objects.get(id=event_id).user
+
+    if request.user.is_authenticated:
+        if request.user == event_owner:
+            instance = Event()
+            if event_id:
+                instance = get_object_or_404(Event, pk=event_id)
+            else:
+                instance = Event()
+            event_id = event_id
+            form = ModifyForm(request.POST or None, instance=instance)
+            if request.POST and form.is_valid():
+                Room_id = request.POST.get("room")
+                starttime = request.POST.get("start_time")
+                endtime = request.POST.get("end_time")
+                Event_overlapping_start = Event.objects.filter(room=Room_id, start_time__gt=starttime, start_time__lt=endtime).exclude(id=event_id).exists()
+                Event_overlapping_end = Event.objects.filter(room=Room_id, end_time__gt=starttime, end_time__lt=endtime).exclude(id=event_id).exists()
+                # check for items that envelope this item
+                Event_enveloping = Event.objects.filter(room=Room_id, start_time__lt=starttime, end_time__gt=endtime).exclude(id=event_id).exists()
+                Event_overlapping_start_end = Event.objects.filter(room=Room_id, start_time=starttime, end_time=endtime).exclude(id=event_id).exists()
+                Event_items_present = Event_overlapping_start or Event_overlapping_end or Event_enveloping or Event_overlapping_start_end
+                if Event_items_present:
+                    room = Room.objects.get(id=Room_id)
+                    conflict = (f"you can't modify this event the {room} is already booked at this time")
+                    return render(request, "home/modify.html", {"form": form, "conflict": conflict})
+                else:
+                    form.save()
+                    return HttpResponseRedirect(reverse('secured'))
+            return render(request, 'home/modify.html', {'form': form})
         else:
-            form.save()
-            return HttpResponseRedirect(reverse('secured'))
-    return render(request, 'home/modify.html', {'form': form})
+            conflict = (f"Access not allowed: you are not the owner of that event")
+            return render(request, 'home/secured.html', {'conflict': conflict})
+    else:
+        return redirect('/login')

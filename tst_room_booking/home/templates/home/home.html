@@ -3,6 +3,7 @@
 Home
 {% endblock %}
 {% block content %}
+
 <h2>List of Rooms</h2>
 {% if room_list %}
 
@@ -14,10 +15,13 @@ Home
                         <td><a href="{% url 'room' room.id %}">{{ room.name }}</a></td>
                     </tr>
                     <tr>
-                        <td>number of places: {{ room.capacity }}</td>
+                        <td><img src="media/persons.png" style="width: 50px;"> {{ room.capacity }}</td>
                     </tr>
                     <tr>
                         <td>{{ room.description }}</td>
+                    </tr>
+                    <tr>
+                        <td><img src="media/quack.png" class="img-fluid" alt="Responsive image" style="border-radius: 25px;"></td>
                     </tr>
                 </table>
             {% endfor %}
