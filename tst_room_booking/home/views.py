@@ -101,12 +101,12 @@ class EventDeleteView(DeleteView):
 
 
 def roomdetail(request, room_id):
-    form = EventForm(request.POST or None)
+    form = EventForm(request.POST or None, initial={'room': room_id})
     d = get_date(request.GET.get('d', None))
     add_cal = add(d)
     dect_cal = dect(d)
     if request.user.is_authenticated:
-        form = EventForm(request.POST or None)
+        form = EventForm(request.POST or None, initial={'room': room_id})
         html_cal = formatcal(room_id, d, False)
         cal = mark_safe(html_cal)
         if request.method == "POST":
@@ -138,7 +138,7 @@ def roomdetail(request, room_id):
                     Eventf.end_time = endtime
                     Room_id = Eventf.room
                     Eventf.save()
-                    form = EventForm()
+                    form = EventForm(initial={'room': room_id})
                     while startdatetime.day != enddatetime.day:
                         startdatetime = startdatetime + timedelta(days=1)
                         starttime = datetime.strftime(datetime(year=startdatetime.year,month=startdatetime.month,day=startdatetime.day,hour=7,minute=0),'%Y-%m-%dT%H:%M')
@@ -153,12 +153,12 @@ def roomdetail(request, room_id):
                         Eventf.start_time = starttime
                         Eventf.description = description
                         Eventf.save()
-                        form = EventForm()
+                        form = EventForm(initial={'room': room_id})
                 else:
                     Eventf = form.save(commit=False)
                     Eventf.user = request.user
                     Eventf.save()
-                    form = EventForm()
+                    form = EventForm(initial={'room': room_id})
         html_cal = formatcal(room_id, d, False)
         cal = mark_safe(html_cal) 
         room_list = Event.objects.filter(room=room_id)
