@@ -18,11 +18,12 @@
 
         <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom"
                 style="box-shadow: 2px 2px 20px 0.5rem rgb(34 74 134 / 15%);">
-            <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0 text-bg-dark">
+            <div class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0 text-bg-dark" style="margin-left: 10px; font-size: 25px;">
+                <img src="media/logo.png" style="width: 140px; margin-right: 10px;">
                 <a href="{% url 'home' %}" class="nav-link px-2 link-secondary">Home</a>
                 <a href="{% url 'search' %}" class="nav-link px-2 link-secondary">Search</a>
                 <a href="{% url 'secured' %}" class="nav-link px-2 link-secondary">My events</a>
-            </ul>
+            </div>
             
             <div class="col-md-3 text-end">
                 {% if user.is_authenticated %}
