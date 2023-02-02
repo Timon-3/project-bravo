@@ -52,6 +52,10 @@ def search(request):
             room = Room.objects.filter(id=id)
             room_list = room_list | room
         form = FilterForm()
+        
+        if room_list.__len__() == 0:
+            conflict = (f"Sorry, no free rooms available in this timeframe!")
+            return render(request, "home/search.html", {"form": form, "room_list": room_list, "conflict": conflict})
     return render(request, "home/search.html", {"form": form, "room_list": room_list})
 
 

@@ -7,7 +7,7 @@ def formatevent(starttime, endtime, description):
     height = timediff * 100 + timediff//1*7
     top = (height - 100) / 2 + min/0.6
     return f"""<div style='font-weight: bold; color: rgb(224 224 234); position: relative; top: {top}%; height: {height}%; width: 100%;
-            background-color:rgb(64 104 137);border-radius:6px;background-image: linear-gradient(to bottom right, rgb(64 104 137),
+            background-color:rgb(64 104 137);border-radius:6px; background-image: linear-gradient(to bottom right, rgb(64 104 137),
             rgb(124 164 207));box-shadow: 1px 4px lightgrey;'>{description}</div>"""
 
 def formatrow(week, hour, room_id, minimum_date, maximum_date, hidden_description):
@@ -25,7 +25,7 @@ def formatrow(week, hour, room_id, minimum_date, maximum_date, hidden_descriptio
             row += f"<td>{formatevent(starttime=starttime, endtime=endtime,description=description)}</td>"
         else:
             row += f"<td></td>"
-    return f"<tr>{row}</tr>"
+    return f"<tr style='background-image: linear-gradient(rgb(245 245 245), rgb(255 255 255))'>{row}</tr>"
 
 def formatcal(room_id, cal_date, hidden_description):
     now = datetime.strptime(cal_date,"%Y-%d-%m")
@@ -41,11 +41,11 @@ def formatcal(room_id, cal_date, hidden_description):
     weekdatetime = [monday,tuesday,wednesday,thursday,friday,saturday,sunday]
     week = [monday.day,tuesday.day,wednesday.day,thursday.day,friday.day,saturday.day,sunday.day]
     cal = f'<table border="1" width="100%" height="500">'
-    cal += "<tr><td style='width: 5%;'></td><td>Montag</td><td>Dienstag</td><td>Mittwoch</td><td>Donnerstag</td><td>Freitag</td><td>Samstag</td><td>Sonntag</td></tr>"
+    cal += "<tr style='background-image: linear-gradient(rgb(205 205 205), rgb(245 245 245))'><td style='width: 5%;'></td><td>Montag</td><td>Dienstag</td><td>Mittwoch</td><td>Donnerstag</td><td>Freitag</td><td>Samstag</td><td>Sonntag</td></tr>"
     line2 = "<td style='width: 5%;'></td>"
     for day in weekdatetime:
         line2 += f'<td>{day.day}.{day.month}</td>'
-    cal += f'<tr>{line2}</tr>'
+    cal += f"<tr style='background-image: linear-gradient(rgb(245 245 245), rgb(205 205 205))'>{line2}</tr>"
     for x in range(7,19,1):
         cal += f'{formatrow(week=week, hour=x, room_id=room_id, minimum_date=minimum_date, maximum_date=maximum_date, hidden_description=hidden_description)}'
     cal += f'</table>'

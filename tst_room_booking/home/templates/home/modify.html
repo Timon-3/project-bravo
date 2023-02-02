@@ -3,11 +3,13 @@
 Modify
 {% endblock %}
 {% block content %}
+<div class="container">
 <form method="POST" class="post-form">{% csrf_token %}
     {{ form }}
-    <button type="submit" class="save btn btn-default">Modify</button>
+    <button type="submit" class="btn btn-warning btn-sm">Modify</button>
 </form>
 {% if conflict %}
     <p class="alert alert-danger" role="alert">{{ conflict }}</p>
  {% endif %}
+</div>
 {% endblock %}

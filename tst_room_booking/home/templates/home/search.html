@@ -3,6 +3,8 @@
 search
 {% endblock %}
 {% block content %}
+<div class="container">
+
 <form method="POST" class="get-form">{% csrf_token %}
 
     <div class="container" style="margin-bottom: 1.5%;">
@@ -22,6 +24,7 @@ search
 
 <h2>List of Available Rooms</h2>
 {% if room_list %}
+
     <div class="container">
         <div class="row">
             {% for room in room_list %}
@@ -42,8 +45,10 @@ search
             {% endfor %}
         </div>
     </div>
-
-{% else %}
-<p class="alert alert-danger" role="alert">no free rooms available in this timeframe!</p>
 {% endif %}
+
+{% if conflict %}
+    <p class="alert alert-danger" role="alert">{{ conflict }}</p>
+{% endif %}
+</div>
 {% endblock %}
