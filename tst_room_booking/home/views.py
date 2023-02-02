@@ -288,6 +288,9 @@ def modify(request, event_id=None):
                 Room_id = request.POST.get("room")
                 starttime = request.POST.get("start_time")
                 endtime = request.POST.get("end_time")
+                description = request.POST.get("description")
+                startdatetime = datetime.strptime(starttime,'%Y-%m-%dT%H:%M')
+                enddatetime = datetime.strptime(endtime,'%Y-%m-%dT%H:%M')
                 Event_overlapping_start = Event.objects.filter(room=Room_id, start_time__gt=starttime, start_time__lt=endtime).exclude(id=event_id).exists()
                 Event_overlapping_end = Event.objects.filter(room=Room_id, end_time__gt=starttime, end_time__lt=endtime).exclude(id=event_id).exists()
                 # check for items that envelope this item
@@ -299,7 +302,39 @@ def modify(request, event_id=None):
                     conflict = (f"you can't modify this event the {room} is already booked at this time")
                     return render(request, "home/modify.html", {"form": form, "conflict": conflict})
                 else:
-                    form.save()
+                    if startdatetime > enddatetime:
+                        room = Room.objects.get(id=Room_id)
+                        conflict = ("Starttime has to be before the Endtime")
+                        return render(request, "home/modify.html", {"form": form, "conflict": conflict})
+                    elif startdatetime.day != enddatetime.day:
+                        endtime = datetime.strftime(datetime(year=startdatetime.year,month=startdatetime.month,day=startdatetime.day,hour=19,minute=0),'%Y-%m-%dT%H:%M')
+                        Eventf = form.save(commit=False)
+                        Eventf.user = request.user
+                        Eventf.end_time = endtime
+                        Room_id = Eventf.room
+                        Eventf.save()
+                        form = ModifyForm()
+                        while startdatetime.day != enddatetime.day:
+                            startdatetime = startdatetime + timedelta(days=1)
+                            starttime = datetime.strftime(datetime(year=startdatetime.year,month=startdatetime.month,day=startdatetime.day,hour=7,minute=0),'%Y-%m-%dT%H:%M')
+                            if startdatetime.day == enddatetime.day:
+                                endtime = datetime.strftime(datetime(year=enddatetime.year,month=enddatetime.month,day=enddatetime.day,hour=enddatetime.hour,minute=enddatetime.minute),'%Y-%m-%dT%H:%M')
+                            else:
+                                endtime = datetime.strftime(datetime(year=startdatetime.year,month=startdatetime.month,day=startdatetime.day,hour=19,minute=0),'%Y-%m-%dT%H:%M')
+                            Eventf = form.save(commit=False)
+                            Eventf.user = request.user
+                            Eventf.room = Room_id
+                            Eventf.end_time = endtime
+                            Eventf.start_time = starttime
+                            Eventf.description = description
+                            Eventf.save()
+                            form = ModifyForm()
+                    else:
+                        Eventf = form.save(commit=False)
+                        Eventf.user = request.user
+                        Eventf.save()
+                        form = ModifyForm()
+                        
                     return HttpResponseRedirect(reverse('secured'))
             return render(request, 'home/modify.html', {'form': form})
         else:
