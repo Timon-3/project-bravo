@@ -2,35 +2,63 @@
 {% block title %}
 Home
 {% endblock %}
-{% block content %}
 
+{% block content %}
+<div class="container">
 <h2>List of Rooms</h2>
 {% if room_list %}
 
     <div class="container">
         <div class="row">
             {% for room in room_list %}
-            <a href="{% url 'room' room.id %}" style="color: black; text-decoration-line: none;">
-                <table class="room_list card bg-light mb-3 col-12 col-sm-6 col-md-6 col-lg-3 col-xl-3" style="border-color: black; border-style: solid; border-width: 1; border-radius: 1; text-align: left; margin: 1.5%; align-items: center;">
-                    <tr>
-                        <td>{{ room.name }}</td>
-                    </tr>
-                    <tr>
-                        <td><img src="media/person.png" style="width: 30px; border-radius: 50%;"> {{ room.capacity }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ room.description }}</td>
-                    </tr>
-                    <tr>
-                        <td><img src="media/{{ room.image }}" class="img-fluid" alt="Responsive image" style="border-radius: 25px;"></td>
-                    </tr>
+
+                <table class="btn btn-outline-primary card bg-light mb-3 col-12 col-sm-6 col-md-6 col-lg-3 col-xl-3"
+                        onclick="window.location='{% url 'room' room.id %}';"
+                        style="color: black; border-color: black; border-style: solid; border-width: 1; border-radius: 1; text-align: left; margin: 1.5%; align-items: center;">
+                            <tr>
+                                <td>{{ room.name }}</td>
+                            </tr>
+                            <tr>
+                                <td><img src="media/person.png" style="width: 30px; border-radius: 50%;"> {{ room.capacity }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ room.description }}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <!-- int variables -->
+                                    {% if room.chairs != 0 %}
+                                        {{ room.chairs }} <img src="media/chair.png" style="width: 30px; border-radius: 50%;">
+                                    {% endif %}
+                                    {% if room.tables != 0 %}
+                                        {{ room.tables }} <img src="media/table.png" style="width: 30px; border-radius: 50%;">
+                                    {% endif %}
+                                    {% if room.beamer != 0 %}
+                                        {{ room.beamer }} <img src="media/beamer.png" style="width: 30px; border-radius: 50%;">
+                                    {% endif %}
+
+                                    <!-- boolean variables -->
+                                    {% if room.video %}
+                                        <img src="media/video.png" style="width: 30px; border-radius: 50%;">
+                                    {% endif %}
+                                    {% if room.ethernet %}
+                                        <img src="media/ethernet.png" style="width: 30px; border-radius: 50%;">
+                                    {% endif %}
+                                    {% if room.wlan %}
+                                        <img src="media/wifi.png" style="width: 30px; border-radius: 50%;">
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><img src="media/{{ room.image }}" class="img-fluid" alt="Responsive image" style="border-radius: 25px;"></td>
+                            </tr>
                 </table>
-            </a>
+
             {% endfor %}
         </div>
     </div>
 
 {% endif %}
-
+</div>
 
 {% endblock %}
