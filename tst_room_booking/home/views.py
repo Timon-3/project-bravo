@@ -73,7 +73,7 @@ class SignupView(SuccessMessageMixin, CreateView):
     form_class = RegisterUserForm
     template_name = "home/register.html"
     success_url = "/secured"
-    success_message = "Welcome! You successfully signup."
+    success_message = "Welcome! You successfully signup. Please login to validate your inscription"
 
     # make sure only users who are not already logged in can access the signup page
     def get(self, request, *args, **kwargs):
@@ -307,3 +307,4 @@ def modify(request, event_id=None):
             return render(request, 'home/secured.html', {'conflict': conflict})
     else:
         return redirect('/login')
+
