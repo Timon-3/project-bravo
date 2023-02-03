@@ -1,5 +1,5 @@
 # SETUP ON LINUX SYSTEM
-'''
+```
 #!/bin/bash
 apt update
 apt install -y python3-pip
@@ -10,4 +10,4 @@ git clone https://github.com/Timon-3/project-bravo.git
 cd project-bravo/tst_room_booking/
 python3 manage.py migrate
 python3 manage.py runserver 0:8000
-'''
+```
