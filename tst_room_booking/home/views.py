@@ -27,9 +27,9 @@ class HomeListView(ListView):
         context = super(HomeListView, self).get_context_data(**kwargs)
         return context
 
+
 def search(request):
     form = FilterForm(request.POST or None)
-    #room_list = []
     room_list = Event.objects.none()
     free_room = []
     if request.method == "POST":
@@ -75,7 +75,7 @@ class SignupView(SuccessMessageMixin, CreateView):
     success_url = "/secured"
     success_message = "Welcome! You successfully signup. Please login to validate your inscription"
 
-    # make sure only users who are not already logged in can access the signup page
+    # make sure only users who are not already logged in can access the signup page ('secured')
     def get(self, request, *args, **kwargs):
         if self.request.user.is_authenticated:
             return redirect("/secured")

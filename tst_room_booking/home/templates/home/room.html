@@ -1,38 +1,40 @@
 {% extends "home/layout.html" %}
 {% block title %}
-Home
+    Home
 {% endblock %}
 {% block content %}
-<div class="container">
-    <h2>{{ room.name }}</h2>
-    <h4>Room with {{ room.capacity }} places - {{ room.description }}</h4>
-    {% if request.user.is_authenticated %}
-    <form method="POST">{% csrf_token %}
-        <div class="container">
-            <div class="row">
-                {% for field in form %}
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"> 
-                        <p> {{ field.label_tag }} </p>
-                        <p> {{ field }} </p>
-                    </div>
-                {% endfor %}
-                <div>
-                    <button type="submit" class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 btn btn-primary btn-sm" style="margin-bottom: 1.5%;">Save</button>
-                </div>
-            </div>
-        </div>
-    </form>
-    {% endif %}
-    {% if conflict %}
-        <p class="alert alert-danger" role="alert">{{ conflict }}</p>
-    {% endif %}
-    <div style="display:flex">
-        <a style="color:white" href="{% url 'room' room.id %}?{{ dect_cal }}">
-            <button type="button" class="btn-rounded btn-secondary btn-sm"><- Previous Weeky</button></a>
+    <div class="container">
+        <h2>{{ room.name }}</h2>
+        <h4>Room with {{ room.capacity }} places - {{ room.description }}</h4>
 
-        <a style="color:white" href="{% url 'room' room.id %}?{{ add_cal }}">
-            <button type="button" class="btn-rounded btn-secondary btn-sm" style="flex:1">Next Week -></button></a>
+        {% if request.user.is_authenticated %}
+            <form method="POST">{% csrf_token %}
+                <div class="container">
+                    <div class="row">
+                        {% for field in form %}
+                            <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3"> 
+                                <p> {{ field.label_tag }} </p>
+                                <p> {{ field }} </p>
+                            </div>
+                        {% endfor %}
+                        <div>
+                            <button type="submit" class="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1 btn btn-primary btn-sm" style="margin-bottom: 1.5%;">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        {% endif %}
+
+        {% if conflict %}
+            <p class="alert alert-danger" role="alert">{{ conflict }}</p>
+        {% endif %}
+        <div style="display:flex">
+            <a style="color:white" href="{% url 'room' room.id %}?{{ dect_cal }}">
+                <button type="button" class="btn-rounded btn-secondary btn-sm"><- Previous Weeky</button></a>
+
+            <a style="color:white" href="{% url 'room' room.id %}?{{ add_cal }}">
+                <button type="button" class="btn-rounded btn-secondary btn-sm" style="flex:1">Next Week -></button></a>
+        </div>
+        {{ cal }}
     </div>
-    {{ cal }}
-</div>
 {% endblock %}
